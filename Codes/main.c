@@ -16,7 +16,7 @@ int main() {
         }else if(opcao == 2){
             login();
         }else if(opcao == 3){
-            printf("Desligando\n");
+            printf("Desligando...\n");
             break;
         }
     }
