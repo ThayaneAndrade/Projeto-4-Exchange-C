@@ -13,4 +13,7 @@ typedef struct lista{
 }lista;
 
 void registrar();
-void login();
+
+int login(char *usuariologado, int *senhalogada);
+
+void menuprincipal(char *usuariologado, int *senhalogada, int *logado);
