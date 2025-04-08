@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "funcoes.h"
 
 int main() {
+    
     int opcao;
     while (1) {
         printf("-----Bem vindo a CryptoSpy 2.0-----\n");
