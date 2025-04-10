@@ -2,11 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "funcoes.h"
- 
+
+
 int main() {
     int indice_logado = -1; //índica dinamicamente qual usuário está conectado, baseado no seu índice no vetor de usuarios (EX: 1 = Kaique, 2 = Thayane, 3 = ...)
     lista *Lista = malloc(sizeof(lista)); //declara a lista de usuarios
-    registrar(Lista); //chama a função de registro, que cria dois usuários provisórios e os armazena no arquivo usuarios.bin
+    carregar_usuarios(Lista); //carrega os usuarios do arquivo para o vetor de ponteiros
  
     printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n"); //título
     int opcao;
