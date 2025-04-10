@@ -32,6 +32,6 @@ int main() {
             }else{
                 printf("Opção inválida. Tente novamente.\n");
             }
+            }return 0;
 }
-return 0;    
-}
+ 

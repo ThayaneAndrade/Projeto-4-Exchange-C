@@ -2,7 +2,7 @@
 #include "funcoes.h"
 #include <string.h>
 #include <stdlib.h>
- 
+
 void registrar(lista *Lista) {
     FILE *arquivo = fopen("usuarios.bin", "wb");
     usuario u1 = {"53406698824", "Kaique", 12345, 1000.0, 0.2344, 47.5, 20.0};
@@ -12,7 +12,7 @@ void registrar(lista *Lista) {
     fclose(arquivo);
     carregar_usuarios(Lista);
 }
- 
+
 int login(lista *Lista) {
     char cpfDigitado[12];
     int senhaDigitada;
@@ -20,7 +20,7 @@ int login(lista *Lista) {
     scanf("%s", cpfDigitado);
     printf("Digite sua senha: ");
     scanf("%d", &senhaDigitada);
- 
+
     for (int i = 0; i < Lista->qtd; i++) {
         if (strcmp(Lista->vetor[i]->cpf, cpfDigitado) == 0 &&
             Lista->vetor[i]->senha == senhaDigitada) {
@@ -31,7 +31,7 @@ int login(lista *Lista) {
     printf("\nCPF ou senha incorretos.\n");
     return -1;
 }
- 
+
 int solicita_senha(lista Lista, int indice_logado) {
     int senha;
     printf("\nDigite sua senha: ");
@@ -46,7 +46,7 @@ int solicita_senha(lista Lista, int indice_logado) {
         return 0;
     }
 }
- 
+
 int inserir_usuario(lista *Lista, usuario *user) {
     if (Lista->qtd == 100) {
         printf("Lista atingiu a capacidade maxima!\n");
@@ -54,13 +54,15 @@ int inserir_usuario(lista *Lista, usuario *user) {
     }
     Lista->vetor[Lista->qtd] = user;
     Lista->qtd++;
+    Lista->vetor[Lista->qtd] = user;
+    Lista->qtd++;
     return 0;
 }
- 
+
 void menuprincipal(lista *Lista, int *indice_logado) {
     printf("\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
     int opcao;
- 
+
     while (*indice_logado != -1) {
         printf("\nO que deseja fazer a seguir, %s?\n", Lista->vetor[*indice_logado]->nome);
         printf("1. Deposito\n");
@@ -74,7 +76,7 @@ void menuprincipal(lista *Lista, int *indice_logado) {
         printf("9. Sair\n");
         printf("\nEntrada: ");
         scanf("%d", &opcao);
- 
+
         switch (opcao) {
             case 1:
                 deposito(Lista, *indice_logado);
@@ -95,7 +97,7 @@ void menuprincipal(lista *Lista, int *indice_logado) {
         }
     }
 }
- 
+
 void debug_imprimir_lista(lista *l) {
     printf("\n---- DEBUG: Usuários na lista ----\n");
     for (int i = 0; i < l->qtd; i++) {
@@ -106,7 +108,7 @@ void debug_imprimir_lista(lista *l) {
         printf("  Saldo: %.2f\n", l->vetor[i]->saldo);
     }
 }
- 
+
 void carregar_usuarios(lista *Lista) {
     Lista->qtd = 0;
     FILE *arquivo = fopen("usuarios.bin", "rb");
@@ -114,7 +116,7 @@ void carregar_usuarios(lista *Lista) {
         printf("Erro ao abrir o arquivo de usuários.\n");
         return;
     }
- 
+
     usuario *u = malloc(sizeof(usuario));
     while (fread(u, sizeof(usuario), 1, arquivo) == 1) {
         inserir_usuario(Lista, u);
@@ -123,7 +125,7 @@ void carregar_usuarios(lista *Lista) {
     free(u);
     fclose(arquivo);
 }
- 
+
 void arquivar_usuarios(lista *Lista, int indice_logado) {
     FILE *arquivo = fopen("usuarios.bin", "wb");
     for (int i = 0; i < Lista->qtd; i++) {
@@ -131,7 +133,7 @@ void arquivar_usuarios(lista *Lista, int indice_logado) {
     }
     fclose(arquivo);
 }
- 
+
 void saldo(lista *Lista, int indice_logado) {
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
@@ -147,7 +149,7 @@ void saldo(lista *Lista, int indice_logado) {
     getchar();
     getchar();
 }
- 
+
 void deposito(lista *Lista, int indice_logado) {
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
@@ -161,29 +163,4 @@ void deposito(lista *Lista, int indice_logado) {
     }
     Lista->vetor[indice_logado]->saldo += valor;
     printf("Depósito realizado com sucesso! Seu novo saldo é: %.2f\n", Lista->vetor[indice_logado]->saldo);
-}
- 
-void saque(lista *Lista, int indice_logado) {
-    if (solicita_senha(*Lista, indice_logado) == 0) {
-        return;
-    }
-    float valor;
-    printf("\nDigite o valor a ser sacado: ");
-    scanf("%f", &valor);
-    if (valor <= 0) {
-        printf("\nValor inválido.\n");
-        printf("Pressione ENTER para continuar\n");
-        getchar();
-        getchar();
-        return;
-    } else if (valor > Lista->vetor[indice_logado]->saldo) {
-        printf("\nSaldo Insuficiente! \n");
-        printf("Pressione ENTER para continuar\n");
-        getchar();
-        getchar();
-        return;
-    } else {
-        Lista->vetor[indice_logado]->saldo -= valor;
-        printf("Saque realizado com sucesso! Seu novo saldo é: %.2f\n", Lista->vetor[indice_logado]->saldo);
-    }
 }
