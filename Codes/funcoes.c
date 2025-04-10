@@ -109,6 +109,7 @@ void debug_imprimir_lista(lista *l) { //função provisória criada para verific
         printf("Usuário %d:\n", i + 1);
         printf("  Nome:  %s\n", l->vetor[i]->nome);
         printf("  CPF:  %s\n", l->vetor[i]->cpf);
+        printf("  CPF:  %s\n", l->vetor[i]->cpf);
         printf("  Senha: %d\n", l->vetor[i]->senha);
         printf("  Saldo: %.2f\n", l->vetor[i]->saldo);
     }
