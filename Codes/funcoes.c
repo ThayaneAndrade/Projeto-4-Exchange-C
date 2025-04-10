@@ -3,24 +3,19 @@
 #include <string.h>
 #include <stdlib.h>
  
-void registrar(lista *Lista) { //a função registro ainda não é necessária para o projeto final, porém decidimos implementar apenas para ilustrar melhor o funcionamento do código.
-    FILE *arquivo = fopen("usuarios.bin", "wb"); //abre o arquivo em modo de escrita binaria
- 
-    usuario u1 = {"53406698824", "Kaique", 12345, 1000.0, 0.2344, 47.5, 20.0}; //cria dois usuários provisórios conforme a struct Usuario
-    usuario u2 = {"24889660435","Thayane", 54321, 2000.0, 1.2345, 55, 10}; //cria dois usuários provisórios conforme a struct Usuario
- 
+void registrar(lista *Lista) {
+    FILE *arquivo = fopen("usuarios.bin", "wb");
+    usuario u1 = {"53406698824", "Kaique", 12345, 1000.0, 0.2344, 47.5, 20.0};
+    usuario u2 = {"24889660435", "Thayane", 54321, 2000.0, 1.2345, 55, 10};
     fwrite(&u1, sizeof(usuario), 1, arquivo);
-    fwrite(&u2, sizeof(usuario), 1, arquivo); //adiciona ambos os usuarios no arquivo
- 
+    fwrite(&u2, sizeof(usuario), 1, arquivo);
     fclose(arquivo);
-    carregar_usuarios(Lista); //carrega os usuarios no vetor da lista
- 
+    carregar_usuarios(Lista);
 }
  
 int login(lista *Lista) {
-    char cpfDigitado[12]; //armazena 11 digitos do cpf + 1 para o '\0' no ato do login
-    int senhaDigitada; //armazena a senha digitada pelo usuário no ato do login
- 
+    char cpfDigitado[12];
+    int senhaDigitada;
     printf("Digite seu CPF: ");
     scanf("%s", cpfDigitado);
     printf("Digite sua senha: ");
@@ -28,7 +23,7 @@ int login(lista *Lista) {
  
     for (int i = 0; i < Lista->qtd; i++) {
         if (strcmp(Lista->vetor[i]->cpf, cpfDigitado) == 0 &&
-            Lista->vetor[i]->senha == senhaDigitada) { //compara o cpf e a senha digitados com os armazenados no vetor de usuarios
+            Lista->vetor[i]->senha == senhaDigitada) {
             printf("\nLogin realizado com sucesso! Bem vindo(a), %s!\n", Lista->vetor[i]->nome);
             return i;
         }
@@ -37,38 +32,37 @@ int login(lista *Lista) {
     return -1;
 }
  
-int solicita_senha(lista Lista, int indice_logado) { //função comum usada frequentemente sempre que for solicitado a senha do usuário.
+int solicita_senha(lista Lista, int indice_logado) {
     int senha;
     printf("\nDigite sua senha: ");
     scanf("%d", &senha);
-    if (senha == Lista.vetor[indice_logado]->senha) { //compara a senha digitada com a senha armazenada no vetor de usuarios
-        return 1; //retorna positivo se bem sucedida
+    if (senha == Lista.vetor[indice_logado]->senha) {
+        return 1;
     } else {
         printf("\nSenha incorreta!\n");
-        printf("\nENTER para continuar"); //caso contrário, exibe uma mensagem e aguarda uma confirmação do usuário.
-        getchar(); //limpa o buffer
-        getchar(); //aguarda o usuário pressionar ENTER
+        printf("\nENTER para continuar");
+        getchar();
+        getchar();
         return 0;
     }
 }
-    
-int inserir_usuario(lista *Lista, usuario *user){ //funçao responsável por inserir os usuários no vetor de ponteiros, ou "lista de usuários"
-    if(Lista->qtd == 100){ //verifica se o vetor já atingiu o limite de 100 ponteiros.
+ 
+int inserir_usuario(lista *Lista, usuario *user) {
+    if (Lista->qtd == 100) {
         printf("Lista atingiu a capacidade maxima!\n");
         return 0;
     }
-    Lista->vetor[Lista->qtd] = user; //coloca o usuario criado no vetor, no índice relativo a quantidade atual de usuários existentes
-    Lista->qtd++; //incrimenta a quantidade de ponteiros no vetor (usuarios na lista)
+    Lista->vetor[Lista->qtd] = user;
+    Lista->qtd++;
     return 0;
 }
  
- 
-void menuprincipal(lista *Lista, int *indice_logado) { //função que roda o menu principal em loop, enquanto um usuário estiver logado.
+void menuprincipal(lista *Lista, int *indice_logado) {
     printf("\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
     int opcao;
  
     while (*indice_logado != -1) {
-        printf("\nO que deseja fazer a seguir, %s?\n", Lista->vetor[*indice_logado]->nome); //exibe o nome do usuário logado
+        printf("\nO que deseja fazer a seguir, %s?\n", Lista->vetor[*indice_logado]->nome);
         printf("1. Deposito\n");
         printf("2. Saque\n");
         printf("3. Saldo\n");
@@ -81,17 +75,18 @@ void menuprincipal(lista *Lista, int *indice_logado) { //função que roda o men
         printf("\nEntrada: ");
         scanf("%d", &opcao);
  
-        switch (opcao) { //metodo switch para manipular as opções do menu
+        switch (opcao) {
             case 1:
-                printf("*Deposito\n");
-                break; //utilizar um break após cada case para evitar que o código continue rodando após o case atual (fallthrough)
+                deposito(Lista, *indice_logado);
+                break;
             case 2:
-                printf("*Saque\n");
+                saque(Lista, *indice_logado);
                 break;
             case 3:
                 saldo(Lista, *indice_logado);
                 break;
             case 9:
+                arquivar_usuarios(Lista, *indice_logado);
                 printf("\n*Saindo...\n");
                 *indice_logado = -1;
                 break;
@@ -101,22 +96,19 @@ void menuprincipal(lista *Lista, int *indice_logado) { //função que roda o men
     }
 }
  
- 
- 
-void debug_imprimir_lista(lista *l) { //função provisória criada para verificar se os usuários estão posicionados corretamente no vetor de ponteiros.
+void debug_imprimir_lista(lista *l) {
     printf("\n---- DEBUG: Usuários na lista ----\n");
     for (int i = 0; i < l->qtd; i++) {
         printf("Usuário %d:\n", i + 1);
         printf("  Nome:  %s\n", l->vetor[i]->nome);
-        printf("  CPF:  %s\n", l->vetor[i]->cpf);
         printf("  CPF:  %s\n", l->vetor[i]->cpf);
         printf("  Senha: %d\n", l->vetor[i]->senha);
         printf("  Saldo: %.2f\n", l->vetor[i]->saldo);
     }
 }
  
-void carregar_usuarios(lista *Lista) { //lê usuários armazenados no arquivo e coloca no vetor de ponteiros.
-    Lista->qtd = 0; //reseta a quantidade de usuários na lista
+void carregar_usuarios(lista *Lista) {
+    Lista->qtd = 0;
     FILE *arquivo = fopen("usuarios.bin", "rb");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de usuários.\n");
@@ -124,15 +116,23 @@ void carregar_usuarios(lista *Lista) { //lê usuários armazenados no arquivo e 
     }
  
     usuario *u = malloc(sizeof(usuario));
-    while (fread(u, sizeof(usuario), 1, arquivo) == 1) { //leitura do arquivo
-        inserir_usuario(Lista, u); //insere o usuário lido no vetor de ponteiros
+    while (fread(u, sizeof(usuario), 1, arquivo) == 1) {
+        inserir_usuario(Lista, u);
         u = malloc(sizeof(usuario));
     }
-    free(u); //libera o espaço alocado para o último usuário, que não foi adicionado ao vetor
-    fclose(arquivo); 
+    free(u);
+    fclose(arquivo);
 }
  
-void saldo(lista *Lista, int indice_logado) { //função que exibe o saldo do usuário logado.
+void arquivar_usuarios(lista *Lista, int indice_logado) {
+    FILE *arquivo = fopen("usuarios.bin", "wb");
+    for (int i = 0; i < Lista->qtd; i++) {
+        fwrite(Lista->vetor[i], sizeof(usuario), 1, arquivo);
+    }
+    fclose(arquivo);
+}
+ 
+void saldo(lista *Lista, int indice_logado) {
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
     }
@@ -144,7 +144,46 @@ void saldo(lista *Lista, int indice_logado) { //função que exibe o saldo do us
     printf("%.3f ETH\n", Lista->vetor[indice_logado]->eth);
     printf("%.2f XRP\n", Lista->vetor[indice_logado]->xrp);
     printf("\nENTER para continuar");
-    getchar(); //limpa o buffer
     getchar();
-    return;
+    getchar();
+}
+ 
+void deposito(lista *Lista, int indice_logado) {
+    if (solicita_senha(*Lista, indice_logado) == 0) {
+        return;
+    }
+    float valor;
+    printf("\nDigite o valor a ser depositado: ");
+    scanf("%f", &valor); 
+    if (valor <= 0) {
+        printf("Valor inválido.\n");
+        return;
+    }
+    Lista->vetor[indice_logado]->saldo += valor;
+    printf("Depósito realizado com sucesso! Seu novo saldo é: %.2f\n", Lista->vetor[indice_logado]->saldo);
+}
+ 
+void saque(lista *Lista, int indice_logado) {
+    if (solicita_senha(*Lista, indice_logado) == 0) {
+        return;
+    }
+    float valor;
+    printf("\nDigite o valor a ser sacado: ");
+    scanf("%f", &valor);
+    if (valor <= 0) {
+        printf("\nValor inválido.\n");
+        printf("Pressione ENTER para continuar\n");
+        getchar();
+        getchar();
+        return;
+    } else if (valor > Lista->vetor[indice_logado]->saldo) {
+        printf("\nSaldo Insuficiente! \n");
+        printf("Pressione ENTER para continuar\n");
+        getchar();
+        getchar();
+        return;
+    } else {
+        Lista->vetor[indice_logado]->saldo -= valor;
+        printf("Saque realizado com sucesso! Seu novo saldo é: %.2f\n", Lista->vetor[indice_logado]->saldo);
+    }
 }
