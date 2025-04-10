@@ -7,6 +7,8 @@ int main() {
     char usuariologado[50];
     int senhalogada;
     int logado = 0;
+    lista *Lista = malloc(sizeof(lista));
+
     
     printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n");
     int opcao;
@@ -15,10 +17,11 @@ int main() {
             printf("\n1. Registrar\n");
             printf("2. Login\n");
             printf("3. Sair\n");
+            printf("4. Debug\n");
             printf("\nEntrada: ");
             scanf("%d", &opcao);
             if(opcao == 1){
-                registrar();
+                registrar(Lista);
             }else if(opcao == 2){
                 if(login(usuariologado, &senhalogada) == 1){
                     logado = 1;
@@ -29,10 +32,12 @@ int main() {
             }else if(opcao == 3){
                 printf("\nDesligando...\n");
                 break;
+            }else if(opcao == 4){
+                debug_imprimir_lista(Lista);
             }else{
                 printf("Opção inválida. Tente novamente.\n");
             }
     }
-} 
+}
 return 0;
 }

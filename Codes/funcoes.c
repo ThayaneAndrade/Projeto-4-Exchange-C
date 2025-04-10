@@ -3,23 +3,18 @@
 #include <string.h>
 #include <stdlib.h>
 
-void registrar() {
-    FILE *arquivo = fopen("usuarios.bin", "ab");
-    usuario *user = malloc(sizeof(usuario));
-    if (user == NULL) {
-        printf("Erro ao alocar memória.\n");
-        fclose(arquivo);
-        return;
-    }
-    char *nome = "Kaique";
-    int senha = 1234;
-    strcpy(user->nome, nome);
-    user->senha = senha;
-    fwrite(user, sizeof(usuario), 1, arquivo);
-    printf("\n***Usuário registrado com sucesso!***\n");
-    free(user);
+void registrar(lista *Lista) {
+    FILE *arquivo = fopen("usuarios.bin", "wb"); //abre o arquivo em modo de escrita binaria
+
+    usuario u1 = {"Kaique", 12345, 1000.0};
+    usuario u2 = {"Thayane", 54321, 2000.0}; //cria dois usuários provisórios conforme a struct Usuario
+
+    fwrite(&u1, sizeof(usuario), 1, arquivo);
+    fwrite(&u2, sizeof(usuario), 1, arquivo); //adiciona ambos os usuarios no arquivo
+
     fclose(arquivo);
-    return;
+    carregar_usuarios(Lista); //carrega os usuarios no vetor da lista
+
 }
 
 int login(char *usuariologado, int *senhalogada)
@@ -64,6 +59,24 @@ int login(char *usuariologado, int *senhalogada)
     fclose(arquivo);
 }
     
+int inserir_usuario(lista *Lista, usuario *user){
+    FILE *arquivo = fopen("usuarios.bin", "wb");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 0;
+    }   
+    if(Lista->qtd == 100){
+        printf("Lista atingiu a capacidade maxima!\n");
+        fclose(arquivo);
+        return 0;
+    }
+    Lista->vetor[Lista->qtd] = user;
+    fwrite(Lista->vetor[Lista->qtd], sizeof(usuario), 1, arquivo);
+    Lista->qtd++;
+    return 0;
+}
+
+
 void menuprincipal(char *usuariologado, int *senhalogada, int *logado){
     printf("\n\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
     int opcao;
@@ -114,3 +127,32 @@ void menuprincipal(char *usuariologado, int *senhalogada, int *logado){
         }
     }return;
 }
+
+
+void debug_imprimir_lista(lista *l) {
+    printf("\n---- DEBUG: Usuários na lista ----\n");
+    for (int i = 0; i < l->qtd; i++) {
+        printf("Usuário %d:\n", i + 1);
+        printf("  Nome:  %s\n", l->vetor[i]->nome);
+        printf("  Senha: %d\n", l->vetor[i]->senha);
+        printf("  Saldo: %.2f\n", l->vetor[i]->saldo);
+    }
+}
+
+void carregar_usuarios(lista *Lista) { //lê usuários armazenados no arquivo e coloca no vetor de ponteiros.
+    Lista->qtd = 0; //reseta a quantidade de usuários na lista
+    FILE *arquivo = fopen("usuarios.bin", "rb");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de usuários.\n");
+        return;
+    }
+
+    usuario *u = malloc(sizeof(usuario));
+    while (fread(u, sizeof(usuario), 1, arquivo) == 1) {
+        Lista->vetor[Lista->qtd++] = u;
+        u = malloc(sizeof(usuario)); // só aloca se leitura foi ok
+    }
+    free(u);  // último que não foi usado
+    fclose(arquivo);
+}
+
