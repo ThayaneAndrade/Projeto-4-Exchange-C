@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "funcoes.h"
  
+ 
 int main() {
     int indice_logado = -1; //índica dinamicamente qual usuário está conectado, baseado no seu índice no vetor de usuarios (EX: 1 = Kaique, 2 = Thayane, 3 = ...)
     lista *Lista = malloc(sizeof(lista)); //declara a lista de usuarios
@@ -31,7 +32,6 @@ int main() {
             }else{
                 printf("Opção inválida. Tente novamente.\n");
             }
-}
-return 0;    
+            }return 0;
 }
  
