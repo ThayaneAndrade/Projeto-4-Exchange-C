@@ -54,6 +54,8 @@ int inserir_usuario(lista *Lista, usuario *user) {
     }
     Lista->vetor[Lista->qtd] = user;
     Lista->qtd++;
+    Lista->vetor[Lista->qtd] = user;
+    Lista->qtd++;
     return 0;
 }
 
@@ -80,7 +82,7 @@ void menuprincipal(lista *Lista, int *indice_logado) {
                 deposito(Lista, *indice_logado);
                 break;
             case 2:
-                printf("*Saque\n");
+                saque(Lista, *indice_logado);
                 break;
             case 3:
                 saldo(Lista, *indice_logado);
