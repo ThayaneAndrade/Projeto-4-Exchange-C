@@ -1,7 +1,7 @@
 #define funcoes_h
 
-
 typedef struct usuario { //struct que define as características de cada usuário.
+    char cpf[12];
     char nome[50];
     int senha;
     float saldo;
@@ -15,9 +15,9 @@ typedef struct lista{ //struct que será usada para organizar os usuários por "
 
 void registrar(lista *Lista);
 
-int login(char *usuariologado, int *senhalogada);
+int login(lista *Lista);
 
-void menuprincipal(char *usuariologado, int *senhalogada, int *logado);
+void menuprincipal(lista *Lista, int *logado, int indice_logado);
 
 int inserir_usuario(lista *Lista, usuario *user);
 
