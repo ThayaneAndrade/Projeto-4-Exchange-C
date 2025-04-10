@@ -6,8 +6,8 @@
 void registrar(lista *Lista) {
     FILE *arquivo = fopen("usuarios.bin", "wb"); //abre o arquivo em modo de escrita binaria
 
-    usuario u1 = {"Kaique", 12345, 1000.0};
-    usuario u2 = {"Thayane", 54321, 2000.0}; //cria dois usuários provisórios conforme a struct Usuario
+    usuario u1 = {"53406698824", "Kaique", 12345, 1000.0};
+    usuario u2 = {"24889660435","Thayane", 54321, 2000.0}; //cria dois usuários provisórios conforme a struct Usuario
 
     fwrite(&u1, sizeof(usuario), 1, arquivo);
     fwrite(&u2, sizeof(usuario), 1, arquivo); //adiciona ambos os usuarios no arquivo
@@ -17,47 +17,26 @@ void registrar(lista *Lista) {
 
 }
 
-int login(char *usuariologado, int *senhalogada)
-{
-    FILE *arquivo = fopen("usuarios.bin", "rb");
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        return 0;
-    }
-    usuario *user = malloc(sizeof(usuario));
-    if (user == NULL) {
-        printf("Erro ao alocar memória.\n");
-        fclose(arquivo);
-        return 0;
-    }
-    printf("Digite seu nome: ");
-    scanf("%s", user->nome);
-    printf("Digite sua senha: ");
-    scanf("%d", &user->senha);
+int login(lista *Lista) {
+    char cpfDigitado[12];
+    int senhaDigitada;
 
-    usuario *user2 = malloc(sizeof(usuario)); //
-    if (user2 == NULL) {
-        printf("Erro ao alocar memória.\n");
-        free(user);
-        fclose(arquivo);
-        return 0;
-    }
-    while (fread(user2, sizeof(usuario), 1, arquivo) == 1) {
-        if (strcmp(user->nome, user2->nome) == 0 && user->senha == user2->senha) {
-            printf("\n\nLogin bem-sucedido!\n");
-            strcpy(usuariologado, user->nome);
-            *senhalogada = user->senha;
-            free(user);
-            free(user2);
-            fclose(arquivo);
-            return 1;
+    printf("Digite seu CPF: ");
+    scanf("%s", cpfDigitado);
+    printf("Digite sua senha: ");
+    scanf("%d", &senhaDigitada);
+
+    for (int i = 0; i < Lista->qtd; i++) {
+        if (strcmp(Lista->vetor[i]->cpf, cpfDigitado) == 0 &&
+            Lista->vetor[i]->senha == senhaDigitada) {
+            printf("\nLogin realizado com sucesso! Bem vindo(a), %s!\n", Lista->vetor[i]->nome);
+            return i;
         }
     }
-    printf("\nNome ou senha incorretos.\n");
-    free(user);
-    free(user2);
-    fclose(arquivo);
+    printf("\nCPF ou senha incorretos.\n");
+    return -1;
 }
+
     
 int inserir_usuario(lista *Lista, usuario *user){
     FILE *arquivo = fopen("usuarios.bin", "wb");
@@ -77,11 +56,11 @@ int inserir_usuario(lista *Lista, usuario *user){
 }
 
 
-void menuprincipal(char *usuariologado, int *senhalogada, int *logado){
-    printf("\n\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
+void menuprincipal(lista *Lista, int *logado, int indice_logado){
+    printf("\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
     int opcao;
     while(*logado == 1){
-    printf("O que deseja fazer a seguir, %s?\n\n", usuariologado);
+    printf("\nO que deseja fazer a seguir, %s?\n", Lista->vetor[indice_logado]->nome);
     printf("1. Deposito\n");
     printf("2. Saque\n");
     printf("3. Saldo\n");
@@ -134,6 +113,7 @@ void debug_imprimir_lista(lista *l) {
     for (int i = 0; i < l->qtd; i++) {
         printf("Usuário %d:\n", i + 1);
         printf("  Nome:  %s\n", l->vetor[i]->nome);
+        printf("  CPF:  %s\n", l->vetor[i]->cpf);
         printf("  Senha: %d\n", l->vetor[i]->senha);
         printf("  Saldo: %.2f\n", l->vetor[i]->saldo);
     }
