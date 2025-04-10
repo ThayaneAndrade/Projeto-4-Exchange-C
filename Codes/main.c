@@ -3,11 +3,30 @@
 #include <stdlib.h>
 #include "funcoes.h"
 
-
 int main() {
     int indice_logado = -1; //índica dinamicamente qual usuário está conectado, baseado no seu índice no vetor de usuarios (EX: 1 = Kaique, 2 = Thayane, 3 = ...)
     lista *Lista = malloc(sizeof(lista)); //declara a lista de usuarios
     carregar_usuarios(Lista); //carrega os usuarios do arquivo para o vetor de ponteiros
+
+    //declaração das criptomoedas;
+    cryptomoeda *bitcoin = malloc(sizeof(cryptomoeda));
+    strcpy(bitcoin->nome, "BTC");
+    bitcoin->valor = 467458.20;
+    bitcoin->taxa_compra = bitcoin->valor * 0.03;
+    bitcoin->taxa_venda = bitcoin->valor * 0.02;
+
+    cryptomoeda *ethereum = malloc(sizeof(cryptomoeda));
+    strcpy(ethereum->nome, "ETH");
+    ethereum->valor = 9264.65;
+    ethereum->taxa_compra = ethereum->valor * 0.01;
+    ethereum->taxa_venda = ethereum->valor * 0.02;
+
+    cryptomoeda *ripple = malloc(sizeof(cryptomoeda));
+    strcpy(ripple->nome, "XRP");
+    ripple->valor = 11.77;
+    ripple->taxa_compra = ripple->valor * 0.01;
+    ripple->taxa_venda = ripple->valor * 0.01;
+
  
     printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n"); //título
     int opcao;
@@ -22,7 +41,7 @@ int main() {
                 registrar(Lista);
             }else if(opcao == 2){
                 if ((indice_logado = login(Lista)) != -1) { //tenta fazer login, se bem sucedido, armazena o índice do usuário conectado, se não, índice -1 (ninguém)
-                menuprincipal(Lista, &indice_logado);
+                menuprincipal(Lista, &indice_logado, bitcoin, ethereum, ripple); //se o login for bem sucedido, chama o menu principal
                 }
             }else if(opcao == 3){
                 printf("\nDesligando...\n");

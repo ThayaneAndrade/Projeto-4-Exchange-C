@@ -57,7 +57,7 @@ int inserir_usuario(lista *Lista, usuario *user) {
     return 0;
 }
  
-void menuprincipal(lista *Lista, int *indice_logado) {
+void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple){
     printf("\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
     int opcao;
  
@@ -84,6 +84,9 @@ void menuprincipal(lista *Lista, int *indice_logado) {
                 break;
             case 3:
                 saldo(Lista, *indice_logado);
+                break;
+            case 7:
+                mostrar_cotacao(bitcoin, ethereum, ripple);
                 break;
             case 9:
                 arquivar_usuarios(Lista, *indice_logado);
@@ -186,4 +189,14 @@ void saque(lista *Lista, int indice_logado) {
         Lista->vetor[indice_logado]->saldo -= valor;
         printf("Saque realizado com sucesso! Seu novo saldo é: %.2f\n", Lista->vetor[indice_logado]->saldo);
     }
+}
+
+void mostrar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple) {
+    printf("\n\n\n----- Cotação Atual -----\n");
+    printf("Bitcoin (BTC): %.2f BRL\n", bitcoin->valor);
+    printf("Ethereum (ETH): %.2f BRL\n", ethereum->valor);
+    printf("Ripple (XRP): %.2f BRL\n", ripple->valor);
+    printf("\nPressione ENTER para continuar\n");
+    getchar();
+    getchar();
 }
