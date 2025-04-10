@@ -2,18 +2,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include "funcoes.h"
-
+ 
 int main() {
-    char usuariologado[50];
-    int senhalogada;
-    int logado = 0;
-    lista *Lista = malloc(sizeof(lista));
-
-    
-    printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n");
+    int indice_logado = -1; //índica dinamicamente qual usuário está conectado, baseado no seu índice no vetor de usuarios (EX: 1 = Kaique, 2 = Thayane, 3 = ...)
+    lista *Lista = malloc(sizeof(lista)); //declara a lista de usuarios
+    registrar(Lista); //chama a função de registro, que cria dois usuários provisórios e os armazena no arquivo usuarios.bin
+ 
+    printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n"); //título
     int opcao;
-    while (1) {
-        if (!logado){
+    while (indice_logado == -1) { //enquanto o usuário não estiver logado, entrará na tela de login.
             printf("\n1. Registrar\n");
             printf("2. Login\n");
             printf("3. Sair\n");
@@ -23,11 +20,8 @@ int main() {
             if(opcao == 1){
                 registrar(Lista);
             }else if(opcao == 2){
-                if(login(usuariologado, &senhalogada) == 1){
-                    logado = 1;
-                    menuprincipal(usuariologado, &senhalogada, &logado);    
-                }else{
-                    logado = 0;
+                if ((indice_logado = login(Lista)) != -1) { //tenta fazer login, se bem sucedido, armazena o índice do usuário conectado, se não, índice -1 (ninguém)
+                menuprincipal(Lista, &indice_logado);
                 }
             }else if(opcao == 3){
                 printf("\nDesligando...\n");
@@ -37,7 +31,6 @@ int main() {
             }else{
                 printf("Opção inválida. Tente novamente.\n");
             }
-    }
 }
-return 0;
+return 0;    
 }
