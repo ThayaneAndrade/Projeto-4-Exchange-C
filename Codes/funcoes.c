@@ -2,6 +2,8 @@
 #include "funcoes.h"
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+
  
 void registrar(lista *Lista) {
     FILE *arquivo = fopen("usuarios.bin", "wb");
@@ -60,6 +62,7 @@ int inserir_usuario(lista *Lista, usuario *user) {
 void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple){
     printf("\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
     int opcao;
+    carregar_cryptos(bitcoin, ethereum, ripple);
  
     while (*indice_logado != -1) {
         printf("\nO que deseja fazer a seguir, %s?\n", Lista->vetor[*indice_logado]->nome);
@@ -88,8 +91,12 @@ void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, crypt
             case 7:
                 mostrar_cotacao(bitcoin, ethereum, ripple);
                 break;
+            case 8:
+                atualizar_cotacao(bitcoin, ethereum, ripple);
+                break;
             case 9:
                 arquivar_usuarios(Lista, *indice_logado);
+                arquivar_cryptos(bitcoin, ethereum, ripple);
                 printf("\n*Saindo...\n");
                 *indice_logado = -1;
                 break;
@@ -114,7 +121,6 @@ void carregar_usuarios(lista *Lista) {
     Lista->qtd = 0;
     FILE *arquivo = fopen("usuarios.bin", "rb");
     if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo de usuários.\n");
         return;
     }
  
@@ -192,11 +198,48 @@ void saque(lista *Lista, int indice_logado) {
 }
 
 void mostrar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple) {
-    printf("\n\n\n----- Cotação Atual -----\n");
+    printf("\n\n----- Cotação Atual -----\n");
     printf("Bitcoin (BTC): %.2f BRL\n", bitcoin->valor);
     printf("Ethereum (ETH): %.2f BRL\n", ethereum->valor);
     printf("Ripple (XRP): %.2f BRL\n", ripple->valor);
     printf("\nPressione ENTER para continuar\n");
     getchar();
     getchar();
+}
+
+void atualizar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple) {
+    if (rand() % 2 == 0) {
+        bitcoin->valor += bitcoin->valor * 0.05;
+        ethereum->valor += ethereum->valor * 0.05;
+        ripple->valor += ripple->valor * 0.05;
+        printf("Cotação atualizada com sucesso!\n");
+        mostrar_cotacao(bitcoin, ethereum, ripple);
+    } else if (rand() % 2 == 1) {
+        bitcoin->valor -= bitcoin->valor * 0.05;
+        ethereum->valor -= ethereum->valor * 0.05;
+        ripple->valor -= ripple->valor * 0.05;
+        printf("Cotação atualizada com sucesso!\n");
+        mostrar_cotacao(bitcoin, ethereum, ripple);
+}
+}
+
+
+void arquivar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple) {
+    FILE *arquivo = fopen("cryptos.bin", "wb");
+    fwrite(bitcoin, sizeof(cryptomoeda), 1, arquivo);
+    fwrite(ethereum, sizeof(cryptomoeda), 1, arquivo);
+    fwrite(ripple, sizeof(cryptomoeda), 1, arquivo);
+
+    fclose(arquivo);
+}
+
+void carregar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple) {
+    FILE *arquivo = fopen("cryptos.bin", "rb");
+    if(arquivo == NULL) {
+        return;
+    }
+    fread(bitcoin, sizeof(cryptomoeda), 1, arquivo);
+    fread(ethereum, sizeof(cryptomoeda), 1, arquivo);
+    fread(ripple, sizeof(cryptomoeda), 1, arquivo);
+    fclose(arquivo);
 }

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "funcoes.h"
+#include <time.h>
 
 int main() {
     int indice_logado = -1; //índica dinamicamente qual usuário está conectado, baseado no seu índice no vetor de usuarios (EX: 1 = Kaique, 2 = Thayane, 3 = ...)
@@ -26,7 +27,6 @@ int main() {
     ripple->valor = 11.77;
     ripple->taxa_compra = ripple->valor * 0.01;
     ripple->taxa_venda = ripple->valor * 0.01;
-
  
     printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n"); //título
     int opcao;

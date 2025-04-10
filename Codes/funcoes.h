@@ -34,3 +34,6 @@ void deposito(lista *Lista, int indice_logado);
 void saque(lista *Lista, int indice_logado);
 void arquivar_usuarios(lista *Lista, int indice_logado);
 void mostrar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
+void atualizar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
+void arquivar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
+void carregar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
