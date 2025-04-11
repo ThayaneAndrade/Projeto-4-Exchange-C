@@ -14,7 +14,7 @@ void registrar(lista *Lista) {
     fclose(arquivo);
     carregar_usuarios(Lista);
 }
- 
+
 int login(lista *Lista) {
     char cpfDigitado[12];
     int senhaDigitada;
@@ -22,7 +22,7 @@ int login(lista *Lista) {
     scanf("%s", cpfDigitado);
     printf("Digite sua senha: ");
     scanf("%d", &senhaDigitada);
- 
+
     for (int i = 0; i < Lista->qtd; i++) {
         if (strcmp(Lista->vetor[i]->cpf, cpfDigitado) == 0 &&
             Lista->vetor[i]->senha == senhaDigitada) {
@@ -33,7 +33,7 @@ int login(lista *Lista) {
     printf("\nCPF ou senha incorretos.\n");
     return -1;
 }
- 
+
 int solicita_senha(lista Lista, int indice_logado) {
     int senha;
     printf("\nDigite sua senha: ");
@@ -48,12 +48,14 @@ int solicita_senha(lista Lista, int indice_logado) {
         return 0;
     }
 }
- 
+
 int inserir_usuario(lista *Lista, usuario *user) {
     if (Lista->qtd == 100) {
         printf("Lista atingiu a capacidade maxima!\n");
         return 0;
     }
+    Lista->vetor[Lista->qtd] = user;
+    Lista->qtd++;
     Lista->vetor[Lista->qtd] = user;
     Lista->qtd++;
     return 0;
@@ -77,7 +79,7 @@ void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, crypt
         printf("9. Sair\n");
         printf("\nEntrada: ");
         scanf("%d", &opcao);
- 
+
         switch (opcao) {
             case 1:
                 deposito(Lista, *indice_logado);
@@ -105,7 +107,7 @@ void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, crypt
         }
     }
 }
- 
+
 void debug_imprimir_lista(lista *l) {
     printf("\n---- DEBUG: Usuários na lista ----\n");
     for (int i = 0; i < l->qtd; i++) {
@@ -116,14 +118,14 @@ void debug_imprimir_lista(lista *l) {
         printf("  Saldo: %.2f\n", l->vetor[i]->saldo);
     }
 }
- 
+
 void carregar_usuarios(lista *Lista) {
     Lista->qtd = 0;
     FILE *arquivo = fopen("usuarios.bin", "rb");
     if (arquivo == NULL) {
         return;
     }
- 
+
     usuario *u = malloc(sizeof(usuario));
     while (fread(u, sizeof(usuario), 1, arquivo) == 1) {
         inserir_usuario(Lista, u);
@@ -132,7 +134,7 @@ void carregar_usuarios(lista *Lista) {
     free(u);
     fclose(arquivo);
 }
- 
+
 void arquivar_usuarios(lista *Lista, int indice_logado) {
     FILE *arquivo = fopen("usuarios.bin", "wb");
     for (int i = 0; i < Lista->qtd; i++) {
@@ -140,7 +142,7 @@ void arquivar_usuarios(lista *Lista, int indice_logado) {
     }
     fclose(arquivo);
 }
- 
+
 void saldo(lista *Lista, int indice_logado) {
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
@@ -156,7 +158,7 @@ void saldo(lista *Lista, int indice_logado) {
     getchar();
     getchar();
 }
- 
+
 void deposito(lista *Lista, int indice_logado) {
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
