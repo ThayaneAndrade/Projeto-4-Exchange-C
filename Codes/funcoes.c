@@ -208,13 +208,14 @@ void mostrar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *r
 }
 
 void atualizar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple) {
-    if (rand() % 2 == 0) {
+    float dado = (rand() % 2);
+    if (dado == 0) {
         bitcoin->valor += bitcoin->valor * 0.05;
         ethereum->valor += ethereum->valor * 0.05;
         ripple->valor += ripple->valor * 0.05;
         printf("Cotação atualizada com sucesso!\n");
         mostrar_cotacao(bitcoin, ethereum, ripple);
-    } else if (rand() % 2 == 1) {
+    } else if (dado == 1) {
         bitcoin->valor -= bitcoin->valor * 0.05;
         ethereum->valor -= ethereum->valor * 0.05;
         ripple->valor -= ripple->valor * 0.05;
