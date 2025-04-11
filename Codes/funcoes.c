@@ -91,6 +91,9 @@ void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, crypt
             case 5:
                 compra_crypto(bitcoin, ethereum, ripple, Lista, *indice_logado);
                 break;
+            case 6:
+                vender_crypto(bitcoin, ethereum, ripple, Lista, *indice_logado);
+                break;
             case 7:
                 mostrar_cotacao(bitcoin, ethereum, ripple);
                 break;
@@ -330,6 +333,75 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
             Lista->vetor[indice_logado]->saldo -= valor_com_taxa_xrp;
             printf("Compra realizada com sucesso! Você agora possui %.2f XRP.\n", Lista->vetor[indice_logado]->xrp);
             printf("Seu saldo restante é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            break;
+        case 4:
+            return;
+        default:
+            printf("Opção inválida.\n");
+            break;
+    }
+}
+
+void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado){
+    if (solicita_senha(*Lista, indice_logado) == 0) {
+        return;
+    }
+    printf("\n----- Venda de Criptomoedas -----\n");
+    printf("1. Vender Bitcoin (BTC)\n");
+    printf("2. Vender Ethereum (ETH)\n");
+    printf("3. Vender Ripple (XRP)\n");
+    printf("4. Voltar ao menu principal\n");
+    printf("\nEscolha uma opção: ");
+    int opcao;
+    scanf("%d", &opcao);
+    switch (opcao) {
+        case 1:
+            // Lógica para vender Bitcoin
+            printf("Digite quantos BTC deseja vender: ");
+            float btc_venda;
+            scanf("%f", &btc_venda);
+            if (btc_venda <= 0 || btc_venda > Lista->vetor[indice_logado]->btc) {
+                printf("Quantidade inválida.\n");
+                return;
+            }
+            float valor_btc = btc_venda * bitcoin->valor;
+            float valor_com_taxa_btc = valor_btc - (valor_btc * bitcoin->taxa_venda);
+            Lista->vetor[indice_logado]->btc -= btc_venda;
+            Lista->vetor[indice_logado]->saldo += valor_com_taxa_btc;
+            printf("Venda realizada com sucesso! Você agora possui %.5f BTC.\n", Lista->vetor[indice_logado]->btc);
+            printf("Seu saldo atualizado é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            break;
+        case 2:
+            // Lógica para vender Ethereum
+            printf("Digite quantos ETH deseja vender: ");
+            float eth_venda;
+            scanf("%f", &eth_venda);
+            if (eth_venda <= 0 || eth_venda > Lista->vetor[indice_logado]->eth) {
+                printf("Quantidade inválida.\n");
+                return;
+            }
+            float valor_eth = eth_venda * ethereum->valor;
+            float valor_com_taxa_eth = valor_eth - (valor_eth * ethereum->taxa_venda);
+            Lista->vetor[indice_logado]->eth -= eth_venda;
+            Lista->vetor[indice_logado]->saldo += valor_com_taxa_eth;
+            printf("Venda realizada com sucesso! Você agora possui %.3f ETH.\n", Lista->vetor[indice_logado]->eth);
+            printf("Seu saldo atualizado é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            break;
+        case 3:
+            //lógica para vender ripple
+            printf("Digite quantos XRP deseja vender: ");
+            float xrp_venda;
+            scanf("%f", &xrp_venda);
+            if (xrp_venda <= 0 || xrp_venda > Lista->vetor[indice_logado]->xrp) {
+                printf("Quantidade inválida.\n");
+                return;
+            }
+            float valor_xrp = xrp_venda * ripple->valor;
+            float valor_com_taxa_xrp = valor_xrp - (valor_xrp * ripple->taxa_venda);
+            Lista->vetor[indice_logado]->xrp -= xrp_venda;
+            Lista->vetor[indice_logado]->saldo += valor_com_taxa_xrp;
+            printf("Venda realizada com sucesso! Você agora possui %.2f XRP.\n", Lista->vetor[indice_logado]->xrp);
+            printf("Seu saldo atualizado é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
             break;
         case 4:
             return;
