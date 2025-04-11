@@ -13,20 +13,20 @@ int main() {
     cryptomoeda *bitcoin = malloc(sizeof(cryptomoeda));
     strcpy(bitcoin->nome, "BTC");
     bitcoin->valor = 467458.20;
-    bitcoin->taxa_compra = bitcoin->valor * 0.03;
-    bitcoin->taxa_venda = bitcoin->valor * 0.02;
+    bitcoin->taxa_compra = 0.03;
+    bitcoin->taxa_venda = 0.02;
 
     cryptomoeda *ethereum = malloc(sizeof(cryptomoeda));
     strcpy(ethereum->nome, "ETH");
     ethereum->valor = 9264.65;
-    ethereum->taxa_compra = ethereum->valor * 0.01;
-    ethereum->taxa_venda = ethereum->valor * 0.02;
+    ethereum->taxa_compra = 0.01;
+    ethereum->taxa_venda = 0.02;
 
     cryptomoeda *ripple = malloc(sizeof(cryptomoeda));
     strcpy(ripple->nome, "XRP");
     ripple->valor = 11.77;
-    ripple->taxa_compra = ripple->valor * 0.01;
-    ripple->taxa_venda = ripple->valor * 0.01;
+    ripple->taxa_compra = 0.01;
+    ripple->taxa_venda = 0.01;
  
     printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n"); //título
     int opcao;
