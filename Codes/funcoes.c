@@ -56,8 +56,6 @@ int inserir_usuario(lista *Lista, usuario *user) {
     }
     Lista->vetor[Lista->qtd] = user;
     Lista->qtd++;
-    Lista->vetor[Lista->qtd] = user;
-    Lista->qtd++;
     return 0;
 }
  
