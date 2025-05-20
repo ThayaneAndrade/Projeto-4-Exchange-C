@@ -29,14 +29,12 @@ int main() {
     ripple->taxa_venda = 0.01;
  
     printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n"); //título
-    int opcao;
     while (indice_logado == -1) { //enquanto o usuário não estiver logado, entrará na tela de login.
             printf("\n1. Registrar\n");
             printf("2. Login\n");
             printf("3. Sair\n");
             printf("4. Debug\n");
-            printf("\nEntrada: ");
-            scanf("%d", &opcao);
+            int opcao = userinput(4);
             if(opcao == 1){
                 registrar(Lista);
             }else if(opcao == 2){

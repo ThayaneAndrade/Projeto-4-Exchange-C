@@ -5,14 +5,34 @@
 #include <time.h>
 
  
-void registrar(lista *Lista) {
+void registrar(lista *Lista) { //função para registrar usuários, pede somente nome cpf e senha, os valores iniciais de moedas são 0.
     FILE *arquivo = fopen("usuarios.bin", "wb");
-    usuario u1 = {"53406698824", "Kaique", 12345, 1000.0, 0.2344, 47.5, 20.0};
-    usuario u2 = {"24889660435", "Thayane", 54321, 2000.0, 1.2345, 55, 10};
-    fwrite(&u1, sizeof(usuario), 1, arquivo);
-    fwrite(&u2, sizeof(usuario), 1, arquivo);
+    printf("----- Cadastro -----\n");
+    usuario *user = malloc(sizeof(usuario));
+    user->qtdTransacoes = 0;
+    printf("Digite seu nome: ");
+    scanf("%s", user->nome);
+    printf("Digite seu CPF (somente números): ");
+    scanf("%s", user->cpf);
+    //verifica se o CPF já existe
+    for (int i = 0; i < Lista->qtd; i++) {
+        if (strcmp(Lista->vetor[i]->cpf, user->cpf) == 0) {
+            printf("CPF já cadastrado. Tente novamente.\n");
+            free(user);
+            fclose(arquivo);
+            return;
+        }
+    }
+    printf("Digite sua senha (somente números): ");
+    user->senha = userinput(99999);
+    printf("Cadastro realizado com sucesso!\n");
+    Lista->vetor[Lista->qtd] = user;
+    Lista->qtd++;
+    fwrite(user, sizeof(usuario), 1, arquivo);
     fclose(arquivo);
-    carregar_usuarios(Lista);
+    printf("Pressione ENTER para continuar\n");
+    getchar();
+    getchar();
 }
 
 int login(lista *Lista) {
@@ -21,7 +41,7 @@ int login(lista *Lista) {
     printf("Digite seu CPF: ");
     scanf("%s", cpfDigitado);
     printf("Digite sua senha: ");
-    scanf("%d", &senhaDigitada);
+    senhaDigitada = userinput(99999);
 
     for (int i = 0; i < Lista->qtd; i++) {
         if (strcmp(Lista->vetor[i]->cpf, cpfDigitado) == 0 &&
@@ -35,9 +55,8 @@ int login(lista *Lista) {
 }
 
 int solicita_senha(lista Lista, int indice_logado) {
-    int senha;
     printf("\nDigite sua senha: ");
-    scanf("%d", &senha);
+    int senha = userinput(99999);
     if (senha == Lista.vetor[indice_logado]->senha) {
         return 1;
     } else {
@@ -61,7 +80,6 @@ int inserir_usuario(lista *Lista, usuario *user) {
  
 void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple){
     printf("\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
-    int opcao;
     carregar_cryptos(bitcoin, ethereum, ripple);
  
     while (*indice_logado != -1) {
@@ -75,9 +93,7 @@ void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, crypt
         printf("7. Mostrar Cotação\n");
         printf("8. Atualizar Cotação\n");
         printf("9. Sair\n");
-        printf("\nEntrada: ");
-        scanf("%d", &opcao);
-
+        int opcao = userinput(9);
         switch (opcao) {
             case 1:
                 deposito(Lista, *indice_logado);
@@ -120,11 +136,14 @@ void debug_imprimir_lista(lista *l) {
         printf("  CPF:  %s\n", l->vetor[i]->cpf);
         printf("  Senha: %d\n", l->vetor[i]->senha);
         printf("  Saldo: %.2f\n", l->vetor[i]->saldo);
+        printf("  BTC:   %.5f\n", l->vetor[i]->btc);
+        printf("  ETH:   %.3f\n", l->vetor[i]->eth);
+        printf("  XRP:   %.2f\n", l->vetor[i]->xrp);
+        printf("\n");
     }
 }
 
 void carregar_usuarios(lista *Lista) {
-    Lista->qtd = 0;
     FILE *arquivo = fopen("usuarios.bin", "rb");
     if (arquivo == NULL) {
         return;
@@ -182,9 +201,8 @@ void saque(lista *Lista, int indice_logado) {
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
     }
-    float valor;
     printf("\nDigite o valor a ser sacado: ");
-    scanf("%f", &valor);
+    float valor = uservalor();
     if (valor <= 0) {
         printf("\nValor inválido.\n");
         printf("Pressione ENTER para continuar\n");
@@ -255,32 +273,27 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
     }
+    printf("\nTaxas atuais: ");
+    mostrar_cotacao(bitcoin, ethereum, ripple);
     printf("\n----- Compra de Criptomoedas -----\n");
     printf("1. Comprar Bitcoin (BTC)\n");
     printf("2. Comprar Ethereum (ETH)\n");
     printf("3. Comprar Ripple (XRP)\n");
     printf("4. Voltar ao menu principal\n");
-    printf("\nEscolha uma opção: ");
-    int opcao;
-    scanf("%d", &opcao);
+    int opcao = userinput(4);
 
     switch (opcao) {
         case 1:
             //Lógica para comprar Bitcoin
             printf("Digite quantos Reais deseja investir em Bitcoin: ");
-            float valor;
-            scanf("%f", &valor);
-            if (valor <= 0) {
-                printf("Valor inválido.\n");
-                return;
-            }
+            float valor = uservalor();
             float valor_com_taxa = valor + (valor * bitcoin->taxa_compra);
             if (valor_com_taxa > Lista->vetor[indice_logado]->saldo) {
                 printf("Saldo insuficiente para realizar a compra.\n");
                 return;
             }
             float bitcoin_comprada = valor / bitcoin->valor;
-            printf("Você está prestes a comprar %.5f BTC por %.2f BRL. Pressione ENTER para continuar\n", bitcoin_comprada, valor);
+            printf("Você está prestes a comprar %.5f BTC por %.2f BRL. Pressione ENTER para continuar\n", bitcoin_comprada, valor_com_taxa);
             getchar();
             getchar();         
             Lista->vetor[indice_logado]->btc += bitcoin_comprada;
@@ -351,16 +364,13 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
     printf("2. Vender Ethereum (ETH)\n");
     printf("3. Vender Ripple (XRP)\n");
     printf("4. Voltar ao menu principal\n");
-    printf("\nEscolha uma opção: ");
-    int opcao;
-    scanf("%d", &opcao);
+    int opcao = userinput(4);
     switch (opcao) {
         case 1:
             // Lógica para vender Bitcoin
-            printf("Digite quantos BTC deseja vender: ");
-            float btc_venda;
-            scanf("%f", &btc_venda);
-            if (btc_venda <= 0 || btc_venda > Lista->vetor[indice_logado]->btc) {
+            printf("Digite quantos BTC deseja vender");
+            float btc_venda = uservalor();
+            if (btc_venda > Lista->vetor[indice_logado]->btc) {
                 printf("Quantidade inválida.\n");
                 return;
             }
@@ -374,9 +384,8 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
         case 2:
             // Lógica para vender Ethereum
             printf("Digite quantos ETH deseja vender: ");
-            float eth_venda;
-            scanf("%f", &eth_venda);
-            if (eth_venda <= 0 || eth_venda > Lista->vetor[indice_logado]->eth) {
+            float eth_venda = uservalor();
+            if (eth_venda > Lista->vetor[indice_logado]->eth) {
                 printf("Quantidade inválida.\n");
                 return;
             }
@@ -390,9 +399,8 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
         case 3:
             //lógica para vender ripple
             printf("Digite quantos XRP deseja vender: ");
-            float xrp_venda;
-            scanf("%f", &xrp_venda);
-            if (xrp_venda <= 0 || xrp_venda > Lista->vetor[indice_logado]->xrp) {
+            float xrp_venda = uservalor();
+            if (xrp_venda > Lista->vetor[indice_logado]->xrp) {
                 printf("Quantidade inválida.\n");
                 return;
             }
@@ -408,5 +416,41 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
         default:
             printf("Opção inválida.\n");
             break;
+    }
+}
+
+int userinput(int maxopcoes){ //pega a entrada do jogador e verifica se é válida
+    int escolha;
+    int resultado;
+
+    while (1) {
+        printf("\nEntrada: ");
+        resultado = scanf("%d", &escolha);  //tenta ler um número inteiro
+
+        //verifica se o input não é um número
+        if (resultado != 1) {
+            while (getchar() != '\n');  //limpa o buffer
+            printf("\nEntrada inválida. Por favor, digite um número.\n");
+        } else if (escolha < 1 || escolha > maxopcoes) {  //verifica se o número está fora do intervalo
+            printf("\nEntrada Inválida. Digite um número entre 1 e %d.\n", maxopcoes);
+        } else {
+            return escolha;  //retorna a escolha válida
+        }
+    }
+}
+
+int uservalor(){
+    while(1){
+        printf("\nValor: ");
+        double valor;
+        if(scanf("%lf",&valor)!=1){
+            printf("digite apenas numeros.");
+            while((valor = getchar()) != '\n' && valor != EOF);
+        }
+        else if(valor<=0) {
+            printf("valor invalido.");
+        }else{
+            return valor;
+        }
     }
 }

@@ -1,26 +1,40 @@
 #define funcoes_h
- 
-typedef struct usuario {
+
+
+typedef struct {
+    int dia, mes, ano;
+    int hora, minuto, segundo;
+}DataHora;
+
+typedef struct {
+    DataHora dh;
+    char tipo;       //'C' compra, 'V' venda, 'D' deposito e 'S' saque
+    double valor;
+    double taxa;
+}Transacao;
+
+typedef struct {
     char cpf[12];
     char nome[50];
-    int senha;
-    float saldo;
-    float btc;
-    float eth;
-    float xrp;
-} usuario;
+    int  senha;
+    double saldo;
+    double btc, eth, xrp;
+    Transacao transacoes[100];
+    int qtdTransacoes;
+}usuario;
+
  
 typedef struct lista {
     usuario *vetor[100];
     int qtd;
-} lista;
+}lista;
 
 typedef struct cryptomoeda {
     char nome[5];
     float valor;
     float taxa_compra;
     float taxa_venda;
-} cryptomoeda;
+}cryptomoeda;
  
 void registrar(lista *Lista);
 int login(lista *Lista);
@@ -39,3 +53,5 @@ void arquivar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *
 void carregar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
 void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado);
 void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado);
+int userinput(int max);
+int uservalor();
