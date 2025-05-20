@@ -104,6 +104,9 @@ void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, crypt
             case 3:
                 saldo(Lista, *indice_logado);
                 break;
+            case 4:
+                extrato(Lista, *indice_logado);
+                break;
             case 5:
                 compra_crypto(bitcoin, ethereum, ripple, Lista, *indice_logado);
                 break;
@@ -195,6 +198,7 @@ void deposito(lista *Lista, int indice_logado) {
     }
     Lista->vetor[indice_logado]->saldo += valor;
     printf("Depósito realizado com sucesso! Seu novo saldo é: %.2f\n", Lista->vetor[indice_logado]->saldo);
+    registra_transacao(Lista, indice_logado, 'D', valor, 0.0);
 }
  
 void saque(lista *Lista, int indice_logado) {
@@ -218,6 +222,7 @@ void saque(lista *Lista, int indice_logado) {
     } else {
         Lista->vetor[indice_logado]->saldo -= valor;
         printf("Saque realizado com sucesso! Seu novo saldo é: %.2f\n", Lista->vetor[indice_logado]->saldo);
+        registra_transacao(Lista, indice_logado, 'S', valor, 0.0);     
     }
 }
 
@@ -300,6 +305,7 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
             Lista->vetor[indice_logado]->saldo -= valor_com_taxa;
             printf("Compra realizada com sucesso! Você agora possui %.5f BTC.\n", Lista->vetor[indice_logado]->btc);
             printf("Seu saldo restante é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            registra_transacao(Lista, indice_logado, 'C', valor_com_taxa, bitcoin->taxa_compra); 
             break;
         case 2:
             // Lógica para comprar Ethereum
@@ -323,6 +329,7 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
             Lista->vetor[indice_logado]->saldo -= valor_com_taxa_eth;
             printf("Compra realizada com sucesso! Você agora possui %.3f ETH.\n", Lista->vetor[indice_logado]->eth);
             printf("Seu saldo restante é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            registra_transacao(Lista, indice_logado, 'C', valor_com_taxa_eth, ethereum->taxa_compra);
             break;
         case 3:
             // Lógica para comprar Ripple
@@ -346,6 +353,7 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
             Lista->vetor[indice_logado]->saldo -= valor_com_taxa_xrp;
             printf("Compra realizada com sucesso! Você agora possui %.2f XRP.\n", Lista->vetor[indice_logado]->xrp);
             printf("Seu saldo restante é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            registra_transacao(Lista, indice_logado, 'C', valor_com_taxa_xrp, ripple->taxa_compra);
             break;
         case 4:
             return;
@@ -380,6 +388,7 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
             Lista->vetor[indice_logado]->saldo += valor_com_taxa_btc;
             printf("Venda realizada com sucesso! Você agora possui %.5f BTC.\n", Lista->vetor[indice_logado]->btc);
             printf("Seu saldo atualizado é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            registra_transacao(Lista, indice_logado, 'V', valor_com_taxa_btc, bitcoin->taxa_venda);
             break;
         case 2:
             // Lógica para vender Ethereum
@@ -395,6 +404,7 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
             Lista->vetor[indice_logado]->saldo += valor_com_taxa_eth;
             printf("Venda realizada com sucesso! Você agora possui %.3f ETH.\n", Lista->vetor[indice_logado]->eth);
             printf("Seu saldo atualizado é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            registra_transacao(Lista, indice_logado, 'V', valor_com_taxa_eth, ethereum->taxa_venda);
             break;
         case 3:
             //lógica para vender ripple
@@ -410,6 +420,7 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
             Lista->vetor[indice_logado]->saldo += valor_com_taxa_xrp;
             printf("Venda realizada com sucesso! Você agora possui %.2f XRP.\n", Lista->vetor[indice_logado]->xrp);
             printf("Seu saldo atualizado é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
+            registra_transacao(Lista, indice_logado, 'V', valor_com_taxa_xrp, ripple->taxa_venda);
             break;
         case 4:
             return;
@@ -453,4 +464,58 @@ int uservalor(){
             return valor;
         }
     }
+}
+
+void registra_transacao(lista *Lista, int indice_logado, char tipo, double valor, double taxa) {
+    time_t now = time(NULL);
+    struct tm *tm = localtime(&now);
+    usuario *u = Lista->vetor[indice_logado];
+    if (u->qtdTransacoes < 100) {
+        Transacao *t = &u->transacoes[u->qtdTransacoes++];
+        t->dh.dia    = tm->tm_mday;
+        t->dh.mes    = tm->tm_mon + 1;
+        t->dh.ano    = tm->tm_year + 1900;
+        t->dh.hora   = tm->tm_hour;
+        t->dh.minuto = tm->tm_min;
+        t->dh.segundo= tm->tm_sec;
+        t->tipo     = tipo;
+        t->valor    = valor;
+        t->taxa     = taxa;
+    } else {
+        printf("Limite de transacoes atingido!\n");
+    }
+}
+
+void extrato(lista *Lista, int indice_logado) {
+    usuario *u = Lista->vetor[indice_logado];
+    char nomeArquivo[64];
+    sprintf(nomeArquivo, "extrato_%s.txt", u->cpf);
+
+    FILE *fp = fopen(nomeArquivo, "w");
+    if (!fp) {
+        printf("erro ao abrir arquivo de extrato\n");
+        return;
+    }
+
+    //dados do usuario
+    fprintf(fp,
+        "===== EXTRATO DE %s =====\n"
+
+        "CPF   :%s\n"
+        "Saldo :%.2f BRL\n"
+        "BTC   :%.8f\n"
+        "ETH   :%.8f\n"
+        "XRP   :%.8f\n\n",
+        u->nome, u->cpf, u->saldo,
+        u->btc, u->eth, u->xrp
+    );
+
+    //historico de transacoes
+    fprintf(fp, "---- TRANSACOES (%d) ----\n", u->qtdTransacoes);
+    for (int i = 0; i < u->qtdTransacoes; i++) {
+        Transacao *t = &u->transacoes[i];
+        fprintf(fp, "%02d/%02d/%04d %02d:%02d:%02d | %c | valor: %.2f | taxa: %.4f\n",t->dh.dia, t->dh.mes, t->dh.ano, t->dh.hora, t->dh.minuto, t->dh.segundo, t->tipo, t->valor, t->taxa);
+    }
+    fclose(fp);
+    printf("extrato salvo em %s\n", nomeArquivo);
 }

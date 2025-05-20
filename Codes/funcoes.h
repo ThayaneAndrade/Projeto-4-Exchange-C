@@ -55,3 +55,5 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
 void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado);
 int userinput(int max);
 int uservalor();
+void registra_transacao(lista *Lista, int indice_logado, char tipo, double valor, double taxa);
+void extrato(lista *Lista, int indice_logado);
