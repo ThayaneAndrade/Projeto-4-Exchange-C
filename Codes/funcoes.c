@@ -14,6 +14,12 @@ void registrar(lista *Lista) { //função para registrar usuários, pede somente
     scanf("%s", user->nome);
     printf("Digite seu CPF (somente números): ");
     scanf("%s", user->cpf);
+    if (strlen(user->cpf) != 11) {
+        printf("CPF inválido. Deve conter 11 dígitos.\n");
+        free(user);
+        fclose(arquivo);
+        return;
+    }
     //verifica se o CPF já existe
     for (int i = 0; i < Lista->qtd; i++) {
         if (strcmp(Lista->vetor[i]->cpf, user->cpf) == 0) {
@@ -40,6 +46,10 @@ int login(lista *Lista) {
     int senhaDigitada;
     printf("Digite seu CPF: ");
     scanf("%s", cpfDigitado);
+    if (strlen(cpfDigitado) != 11) {
+        printf("CPF inválido. Deve conter 11 dígitos.\n");
+        return -1;
+    }
     printf("Digite sua senha: ");
     senhaDigitada = userinput(99999);
 
@@ -189,9 +199,8 @@ void deposito(lista *Lista, int indice_logado) {
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
     }
-    float valor;
     printf("\nDigite o valor a ser depositado: ");
-    scanf("%f", &valor); 
+    float valor = uservalor(); 
     if (valor <= 0) {
         printf("Valor inválido.\n");
         return;
