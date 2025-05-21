@@ -1,3 +1,4 @@
+#ifndef funcoes_h
 #define funcoes_h
 
 
@@ -60,3 +61,5 @@ double uservalor();
 void registra_transacao(lista *Lista, int indice_logado, char tipo, double valor, double taxa, const char *crypto, double quantidade);
 void extrato(lista *Lista, int indice_logado);
 void salvar_extrato_arquivo(lista *Lista, int indice_logado);
+
+#endif  // Fim do arquivo de cabeçalho
