@@ -56,7 +56,7 @@ void carregar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *
 void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado);
 void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado);
 int userinput(int max);
-int uservalor();
+double uservalor();
 void registra_transacao(lista *Lista, int indice_logado, char tipo, double valor, double taxa, const char *crypto, double quantidade);
 void extrato(lista *Lista, int indice_logado);
 void salvar_extrato_arquivo(lista *Lista, int indice_logado);

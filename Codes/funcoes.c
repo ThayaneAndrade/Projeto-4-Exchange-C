@@ -299,10 +299,13 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
                 printf("Saldo insuficiente para realizar a compra.\n");
                 return;
             }
-            float bitcoin_comprada = valor / bitcoin->valor;
-            printf("Você está prestes a comprar %.5f BTC por %.2f BRL. Pressione ENTER para continuar\n", bitcoin_comprada, valor_com_taxa);
-            getchar();
-            getchar();         
+            double bitcoin_comprada = valor / bitcoin->valor;
+            printf("Você está prestes a comprar %.5f BTC por %.2f BRL. Digite '1' para continuar ou '2' para cancelar.\n", bitcoin_comprada, valor_com_taxa);
+            int confirmacao = userinput(2);
+            if (confirmacao != 1) {
+                printf("Compra cancelada.\n");
+                return;
+            }        
             Lista->vetor[indice_logado]->btc += bitcoin_comprada;
             Lista->vetor[indice_logado]->saldo -= valor_com_taxa;
             printf("Compra realizada com sucesso! Você agora possui %.5f BTC.\n", Lista->vetor[indice_logado]->btc);
@@ -324,10 +327,13 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
                 printf("Saldo insuficiente para realizar a compra.\n");
                 return;
             }
-            float ethereum_comprada = valor_eth / ethereum->valor;
-            printf("Você está prestes a comprar %.3f ETH por %.2f BRL. Pressione ENTER para continuar\n", ethereum_comprada, valor_com_taxa_eth);
-            getchar();
-            getchar();
+            double ethereum_comprada = valor_eth / ethereum->valor;
+            printf("Você está prestes a comprar %.3f ETH por %.2f BRL. Digite '1' para continuar ou '2' para cancelar.\n", ethereum_comprada, valor_com_taxa_eth);
+            confirmacao = userinput(2);
+            if (confirmacao != 1) {
+                printf("Compra cancelada.\n");
+                return;
+            }
             Lista->vetor[indice_logado]->eth += ethereum_comprada;
             Lista->vetor[indice_logado]->saldo -= valor_com_taxa_eth;
             printf("Compra realizada com sucesso! Você agora possui %.3f ETH.\n", Lista->vetor[indice_logado]->eth);
@@ -349,10 +355,13 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
                 printf("Saldo insuficiente para realizar a compra.\n");
                 return;
             }
-            float ripple_comprada = valor_xrp / ripple->valor;
-            printf("Você está prestes a comprar %.5f XRP por %.2f BRL. Pressione ENTER para continuar\n", ripple_comprada, valor_com_taxa_xrp);
-            getchar();
-            getchar();
+            double ripple_comprada = valor_xrp / ripple->valor;
+            printf("Você está prestes a comprar %.2f XRP por %.2f BRL. Digite '1' para continuar ou '2' para cancelar.\n", ripple_comprada, valor_com_taxa_xrp);
+            confirmacao = userinput(2);
+            if (confirmacao != 1) {
+                printf("Compra cancelada.\n");
+                return;
+            }
             Lista->vetor[indice_logado]->xrp += ripple_comprada;
             Lista->vetor[indice_logado]->saldo -= valor_com_taxa_xrp;
             printf("Compra realizada com sucesso! Você agora possui %.2f XRP.\n", Lista->vetor[indice_logado]->xrp);
@@ -372,23 +381,33 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
     }
+    printf("\nTaxas atuais: ");
+    mostrar_cotacao(bitcoin, ethereum, ripple);
     printf("\n----- Venda de Criptomoedas -----\n");
     printf("1. Vender Bitcoin (BTC)\n");
     printf("2. Vender Ethereum (ETH)\n");
     printf("3. Vender Ripple (XRP)\n");
     printf("4. Voltar ao menu principal\n");
     int opcao = userinput(4);
+    int confirmacao;
     switch (opcao) {
         case 1:
             // Lógica para vender Bitcoin
-            printf("Digite quantos BTC deseja vender");
-            float btc_venda = uservalor();
+            printf("Você possui %.5f BTC.\n", Lista->vetor[indice_logado]->btc); //mostra quantos da crypto o usuário tem
+            printf("Digite quantos BTC deseja vender"); 
+            double btc_venda = uservalor(); //recebe a quantidade a ser vendida
             if (btc_venda > Lista->vetor[indice_logado]->btc) {
-                printf("Quantidade inválida.\n");
+                printf("Saldo insuficiente.\n"); //verifica se o usuário tem saldo suficiente
                 return;
             }
-            float valor_btc = btc_venda * bitcoin->valor;
-            float valor_com_taxa_btc = valor_btc - (valor_btc * bitcoin->taxa_venda);
+            double valor_btc = btc_venda * bitcoin->valor;
+            double valor_com_taxa_btc = valor_btc - (valor_btc * bitcoin->taxa_venda);
+            printf("Você está prestes a vender %.5f BTC por %.2f BRL. Digite '1' para continuar ou '2' para cancelar.\n", btc_venda, valor_com_taxa_btc);
+            confirmacao = userinput(2);
+            if (confirmacao != 1) {
+                printf("Venda cancelada.\n");
+                return;
+            }
             Lista->vetor[indice_logado]->btc -= btc_venda;
             Lista->vetor[indice_logado]->saldo += valor_com_taxa_btc;
             printf("Venda realizada com sucesso! Você agora possui %.5f BTC.\n", Lista->vetor[indice_logado]->btc);
@@ -397,39 +416,51 @@ void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
             salvar_extrato_arquivo(Lista, indice_logado); //salva o extrato em arquivo
             break;
         case 2:
-            // Lógica para vender Ethereum
+            //lógica para vender ethereum
+            printf("Você possui %.3f ETH.\n", Lista->vetor[indice_logado]->eth);
             printf("Digite quantos ETH deseja vender: ");
-            float eth_venda = uservalor();
+            double eth_venda = uservalor();
             if (eth_venda > Lista->vetor[indice_logado]->eth) {
-                printf("Quantidade inválida.\n");
+                printf("Saldo insuficiente.\n");
                 return;
             }
-            float valor_eth = eth_venda * ethereum->valor;
-            float valor_com_taxa_eth = valor_eth - (valor_eth * ethereum->taxa_venda);
+            double valor_eth = eth_venda * ethereum->valor;
+            double valor_com_taxa_eth = valor_eth - (valor_eth * ethereum->taxa_venda);
+            printf("Você está prestes a vender %.5f ETH por %.2f BRL. Digite '1' para continuar ou '2' para cancelar.\n", eth_venda, valor_com_taxa_eth);
+            confirmacao = userinput(1);
+            if (confirmacao != 1) {
+                printf("Venda cancelada.\n");
+                return;
+            }
             Lista->vetor[indice_logado]->eth -= eth_venda;
             Lista->vetor[indice_logado]->saldo += valor_com_taxa_eth;
-            printf("Venda realizada com sucesso! Você agora possui %.3f ETH.\n", Lista->vetor[indice_logado]->eth);
+            printf("Venda realizada com sucesso! Você agora possui %.5f ETH.\n", Lista->vetor[indice_logado]->eth);
             printf("Seu saldo atualizado é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
             registra_transacao(Lista, indice_logado, 'V', valor_com_taxa_eth, ethereum->taxa_venda, "ETH", eth_venda);
-            salvar_extrato_arquivo(Lista, indice_logado); //salva o extrato em arquivo
             break;
         case 3:
             //lógica para vender ripple
+            printf("Você possui %.2f XRP.\n", Lista->vetor[indice_logado]->xrp);
             printf("Digite quantos XRP deseja vender: ");
-            float xrp_venda = uservalor();
+            double xrp_venda = uservalor();
             if (xrp_venda > Lista->vetor[indice_logado]->xrp) {
-                printf("Quantidade inválida.\n");
+                printf("Saldo insuficiente.\n");
                 return;
             }
-            float valor_xrp = xrp_venda * ripple->valor;
-            float valor_com_taxa_xrp = valor_xrp - (valor_xrp * ripple->taxa_venda);
+            double valor_xrp = xrp_venda * ripple->valor;
+            double valor_com_taxa_xrp = valor_xrp - (valor_xrp * ripple->taxa_venda);
+            printf("Você está prestes a vender %.5f XRP por %.2f BRL. Digite '1' para continuar ou '2' para cancelar.\n", xrp_venda, valor_com_taxa_xrp);
+            confirmacao = userinput(1);
+            if (confirmacao != 1) {
+                printf("Venda cancelada.\n");
+                return;
+            }
             Lista->vetor[indice_logado]->xrp -= xrp_venda;
             Lista->vetor[indice_logado]->saldo += valor_com_taxa_xrp;
-            printf("Venda realizada com sucesso! Você agora possui %.2f XRP.\n", Lista->vetor[indice_logado]->xrp);
+            printf("Venda realizada com sucesso! Você agora possui %.5f XRP.\n", Lista->vetor[indice_logado]->xrp);
             printf("Seu saldo atualizado é: %.2f BRL\n", Lista->vetor[indice_logado]->saldo);
             registra_transacao(Lista, indice_logado, 'V', valor_com_taxa_xrp, ripple->taxa_venda, "XRP", xrp_venda);
             salvar_extrato_arquivo(Lista, indice_logado); //salva o extrato em arquivo
-            break;
         case 4:
             return;
         default:
@@ -458,7 +489,7 @@ int userinput(int maxopcoes){ //pega a entrada do jogador e verifica se é váli
     }
 }
 
-int uservalor(){
+double uservalor(){
     while(1){
         printf("\nValor: ");
         double valor;
