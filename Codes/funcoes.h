@@ -11,6 +11,8 @@ typedef struct {
     char tipo;       //'C' compra, 'V' venda, 'D' deposito e 'S' saque
     double valor;
     double taxa;
+    char crypto[5];
+    double quantidade;
 }Transacao;
 
 typedef struct {
@@ -55,5 +57,6 @@ void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *rip
 void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado);
 int userinput(int max);
 int uservalor();
-void registra_transacao(lista *Lista, int indice_logado, char tipo, double valor, double taxa);
+void registra_transacao(lista *Lista, int indice_logado, char tipo, double valor, double taxa, const char *crypto, double quantidade);
 void extrato(lista *Lista, int indice_logado);
+void salvar_extrato_arquivo(lista *Lista, int indice_logado);
