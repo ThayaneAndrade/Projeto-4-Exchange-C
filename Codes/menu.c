@@ -7,8 +7,6 @@
 
  void menuprincipal(lista *Lista, int *indice_logado, Coins *cc) {
     printf("\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
-    printf("Quantidade de criptomoedas atuais: %d\n", cc->qtd);
- 
     while (*indice_logado != -1) {
         printf("\nO que deseja fazer a seguir, %s?\n", Lista->vetor[*indice_logado]->nome);
         printf("1. Deposito\n");
@@ -29,7 +27,7 @@
                 saque(Lista, *indice_logado);
                 break;
             case 3:
-                saldo(Lista, *indice_logado);
+                saldo(Lista, *indice_logado, cc);
                 break;
             case 4:
                 extrato(Lista, *indice_logado);
@@ -49,6 +47,7 @@
             case 9:
                 printf("\nSaindo...\n");
                 *indice_logado = -1;
+                arquivar_usuarios(Lista); //salva os usuarios em arquivo
                 break;
             default:
                 printf("Opção inválida.\n");
@@ -56,17 +55,14 @@
     }
 }
 
-void debug_imprimir_lista(lista *l) {
-    printf("\n---- DEBUG: Usuários na lista ----\n");
-    for (int i = 0; i < l->qtd; i++) {
-        printf("Usuário %d:\n", i + 1);
-        printf("  Nome:  %s\n", l->vetor[i]->nome);
-        printf("  CPF:  %s\n", l->vetor[i]->cpf);
-        printf("  Senha: %d\n", l->vetor[i]->senha);
-        printf("  Saldo: %.2f\n", l->vetor[i]->saldo);
-        printf("  BTC:   %.5f\n", l->vetor[i]->btc);
-        printf("  ETH:   %.3f\n", l->vetor[i]->eth);
-        printf("  XRP:   %.2f\n", l->vetor[i]->xrp);
+void debug_imprimir_lista(lista *Lista) { //imprime a lista de usuarios
+    printf("\n----- Lista de Usuarios -----\n");
+    for (int i = 0; i < Lista->qtd; i++) {
+        printf("Usuario %d:\n", i + 1);
+        printf("  Nome:  %s\n", Lista->vetor[i]->nome);
+        printf("  CPF:   %s\n", Lista->vetor[i]->cpf);
+        printf("  Senha: %d\n", Lista->vetor[i]->senha);
+        printf("  Saldo: %.2f\n", Lista->vetor[i]->saldo);
         printf("\n");
     }
 }

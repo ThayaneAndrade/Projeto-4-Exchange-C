@@ -19,7 +19,6 @@ int main(void) {
     while (indice_logado == -1) {            //enquanto nao logado
         printf("1. Login\n");
         printf("2. Sair\n");
-        printf("3. Debug\n");
         int opcao = userinput(3);
 
         if (opcao == 1) {
@@ -29,8 +28,6 @@ int main(void) {
         } else if (opcao == 2) {
             printf("\nDesligando...\n");
             break;
-        } else if (opcao == 3) {
-            debug_imprimir_lista(Lista);
         } else {
             printf("Opcao invalida. Tente novamente.\n");
         }

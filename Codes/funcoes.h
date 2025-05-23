@@ -20,8 +20,8 @@ typedef struct {
     char cpf[12];
     char nome[50];
     int  senha;
-    double saldo;
-    double btc, eth, xrp;
+    float saldo;
+    double crypto[10];
     Transacao transacoes[100];
     int qtdTransacoes;
 }usuario;
@@ -49,9 +49,9 @@ int login(lista *Lista);
 void menuprincipal(lista *Lista, int *indice_logado, Coins *cc);
 int solicita_senha(lista Lista, int indice_logado);
 int inserir_usuario(lista *Lista, usuario *user);
-void debug_imprimir_lista(lista *l);
+void debug_imprimir_lista(lista *Lista);
 void carregar_usuarios(lista *Lista);
-void saldo(lista *Lista, int indice_logado);
+void saldo(lista *Lista, int indice_logado, Coins *cc);
 void deposito(lista *Lista, int indice_logado);
 void saque(lista *Lista, int indice_logado);
 void arquivar_usuarios(lista *Lista);
@@ -74,5 +74,7 @@ void excluiruser(lista *Lista);
 void criarcrypto(Coins *cc);
 void mostrar_cryptos(Coins *cc);
 void excluircrypto(Coins *cc);
+void consultarusuario(lista *Lista);
+void consultarextrato(lista *Lista, int indice_logado);
 
 #endif  // Fim do arquivo de cabeçalho

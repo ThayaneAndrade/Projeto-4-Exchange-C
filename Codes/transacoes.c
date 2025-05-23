@@ -46,7 +46,7 @@ void saque(lista *Lista, int indice_logado) {
     }
 }
 
-void saldo(lista *Lista, int indice_logado) {
+void saldo(lista *Lista, int indice_logado, Coins *cc) {
     if (solicita_senha(*Lista, indice_logado) == 0) {
         return;
     }
@@ -54,9 +54,9 @@ void saldo(lista *Lista, int indice_logado) {
     printf("\nNome: %s\n", Lista->vetor[indice_logado]->nome);
     printf("CPF: %s\n", Lista->vetor[indice_logado]->cpf);
     printf("\nSeu saldo é: \n\n%.2f BRL\n", Lista->vetor[indice_logado]->saldo);
-    printf("%.5f BTC\n", Lista->vetor[indice_logado]->btc);
-    printf("%.3f ETH\n", Lista->vetor[indice_logado]->eth);
-    printf("%.2f XRP\n", Lista->vetor[indice_logado]->xrp);
+    for(int i = 0; i < cc->qtd; i++){
+    printf("%.5f %s\n", Lista->vetor[indice_logado]->crypto[i], cc->vetor[i]->nome);
+    }
     printf("\nENTER para continuar");
     getchar();
     getchar();
@@ -106,7 +106,6 @@ void extrato(lista *Lista, int indice_logado) { //função para mostrar o extrat
         getchar();
         return;
     }
-    printf("\n---------- EXTRATO ----------\n\n");
     char linha[256];
     while (fgets(linha, sizeof(linha), fp)) {
         printf("%s", linha);
@@ -127,31 +126,17 @@ void salvar_extrato_arquivo(lista *Lista, int indice_logado) {
         printf("Erro ao abrir arquivo para salvar extrato.\n");
         return;
     }
-
-    fprintf(fp,
-        "===== EXTRATO DE %s =====\n"
-        "CPF   : %s\n"
-        "Saldo : %.2f BRL\n"
-        "BTC   : %.8f\n"
-        "ETH   : %.8f\n"
-        "XRP   : %.8f\n\n"
-        "---- TRANSACOES (%d) ----\n",
-        u->nome, u->cpf, u->saldo,
-        u->btc, u->eth, u->xrp,
-        u->qtdTransacoes
-    );
-
+    fprintf(fp, "---------- EXTRATO ----------\n");
+    fprintf(fp, "Nome: %s\n", u->nome);
+    fprintf(fp, "CPF: %s\n", u->cpf);
+    fprintf(fp, "Saldo: %.2f BRL\n", u->saldo);
+    fprintf(fp, "Transacoes:\n");
     for (int i = 0; i < u->qtdTransacoes; i++) {
         Transacao *t = &u->transacoes[i];
-        fprintf(fp,
-            "%02d/%02d/%04d %02d:%02d:%02d | %c | valor: %.2f | taxa: %.4f | crypto: %s | qtd: %.8f\n",
-            t->dh.dia, t->dh.mes, t->dh.ano,
-            t->dh.hora, t->dh.minuto, t->dh.segundo,
-            t->tipo, t->valor, t->taxa,
-            (t->crypto[0] != '\0') ? t->crypto : "-",
-            t->quantidade
-        );
+        fprintf(fp, "%02d/%02d/%04d %02d:%02d:%02d - ", t->dh.dia, t->dh.mes, t->dh.ano, t->dh.hora, t->dh.minuto, t->dh.segundo);
+        fprintf(fp, "Tipo: %c, Valor: %.2f BRL, Taxa: %.2f BRL, Crypto: %s, Quantidade: %.5f\n", 
+            t->tipo, t->valor, t->taxa, t->crypto, t->quantidade);
     }
-
+    fprintf(fp, "-----------------------------\n");
     fclose(fp);
 }

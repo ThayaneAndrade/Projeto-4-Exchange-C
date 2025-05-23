@@ -7,46 +7,51 @@
 void mostrar_cotacao(Coins *cc) {
     printf("\n\n----- Cotação Atual -----\n");
     for (int i = 0; i < cc->qtd; i++) {
-        cryptomoeda *c = cc->vetor[i];                                         //pega ponteiro da crypto
-        printf("Nome: %s\n",   c->nome);                                       //imprime nome
-        printf("Valor: %.2f BRL\n", c->valor);                                 //imprime valor
-        printf("Taxa de Compra: %.2f%%\n", c->taxa_compra * 100);              //imprime taxa compra
-        printf("Taxa de Venda:  %.2f%%\n", c->taxa_venda  * 100);              //imprime taxa venda
+        cryptomoeda *c = cc->vetor[i];  //pega ponteiro da crypto
+        printf("Nome: %s\n",   c->nome); //imprime nome
+        printf("Valor: %.2f BRL\n", c->valor);//imprime valor
+        printf("Taxa de Compra: %.2f%%\n", c->taxa_compra * 100);   //imprime taxa compra
+        printf("Taxa de Venda:  %.2f%%\n", c->taxa_venda  * 100); //imprime taxa venda
         printf("-------------------------\n");
     }
-    getchar(); getchar();                                                     //espera ENTER
+    getchar(); 
+    getchar(); //espera ENTER
 }
 
 void atualizar_cotacao(Coins *cc) {
-    int direcao = rand() % 2;                                                 //0=alta,1=baixa
+    int direcao = rand() % 2; //0=alta,1=baixa
     for (int i = 0; i < cc->qtd; i++) {
-        cryptomoeda *c = cc->vetor[i];                                        //ponteiro para cada crypto
-        if (direcao == 0) c->valor *= 1.05f;                                  //aumenta 5%
-        else             c->valor *= 0.95f;                                  //reduz 5%
+        cryptomoeda *c = cc->vetor[i]; //ponteiro para cada crypto
+        if (direcao == 0){
+        c->valor *= 1.05f; //aumenta 5%
+        }else{        
+            c->valor *= 0.95f; //diminui 5%
+        }
     }
     printf("Cotação atualizada com sucesso!\n");
-    mostrar_cotacao(cc);                                                      // mostra nova cotação
+    mostrar_cotacao(cc);        
+    arquivar_cryptos(cc); //salva em arquivo
 }
 
 void arquivar_cryptos(Coins *cc) {
-    FILE *f = fopen("cryptos.bin", "wb");                                     //abre para escrita binária
-    if (!f) return;                                                           //falha ao abrir?
-    fwrite(&cc->qtd, sizeof(int), 1, f);                                      //grava quantidade
+    FILE *f = fopen("cryptos.bin", "wb"); //abre para escrita binária
+    if (!f) return;                         //falha ao abrir?
+    fwrite(&cc->qtd, sizeof(int), 1, f); //grava quantidade
     for (int i = 0; i < cc->qtd; i++) {
-        fwrite(cc->vetor[i], sizeof(cryptomoeda), 1, f);                      //grava cada struct
+        fwrite(cc->vetor[i], sizeof(cryptomoeda), 1, f);//grava cada struct
     }
-    fclose(f);                                                                //fecha arquivo
+    fclose(f); //fecha arquivo
 }
 
 void carregar_cryptos(Coins *cc) {
-    FILE *f = fopen("cryptos.bin", "rb");                                     //abre para leitura binária
-    if (!f) { cc->qtd = 0; return;}                                           //se nao existe, sem cryptos
-    fread(&cc->qtd, sizeof(int), 1, f);                                       //lê quantidade
+    FILE *f = fopen("cryptos.bin", "rb"); //abre para leitura binária
+    if (!f) { cc->qtd = 0; return;}  //se nao existe, sem cryptos
+    fread(&cc->qtd, sizeof(int), 1, f); //lê quantidade
     for (int i = 0; i < cc->qtd; i++) {
-        cc->vetor[i] = malloc(sizeof(cryptomoeda));                           //aloca nova struct
-        fread(cc->vetor[i], sizeof(cryptomoeda), 1, f);                       //lê dados no ponteiro
+        cc->vetor[i] = malloc(sizeof(cryptomoeda)); //aloca nova struct
+        fread(cc->vetor[i], sizeof(cryptomoeda), 1, f);  //lê dados no ponteiro
     }
-    fclose(f);                                                                //fecha arquivo
+    fclose(f);//fecha arquivo
 }
 
 void compra_crypto(lista *Lista, int indice_logado, Coins *cc) {
@@ -78,12 +83,9 @@ void compra_crypto(lista *Lista, int indice_logado, Coins *cc) {
         return;
     }else{
         Lista->vetor[indice_logado]->saldo -= valor_com_taxa;
-        Lista->vetor[indice_logado]->btc += quantidade;
-        Lista->vetor[indice_logado]->transacoes[Lista->vetor[indice_logado]->qtdTransacoes].valor = valor_compra;
-        Lista->vetor[indice_logado]->transacoes[Lista->vetor[indice_logado]->qtdTransacoes].taxa = cc->vetor[opcao - 1]->taxa_compra;
-        strcpy(Lista->vetor[indice_logado]->transacoes[Lista->vetor[indice_logado]->qtdTransacoes].crypto, cc->vetor[opcao - 1]->nome);
-        Lista->vetor[indice_logado]->transacoes[Lista->vetor[indice_logado]->qtdTransacoes].quantidade = quantidade;
-        Lista->vetor[indice_logado]->qtdTransacoes++;
+        Lista->vetor[indice_logado]->crypto[opcao-1] += quantidade;   //acumula no índice da crypto
+        registra_transacao(Lista, indice_logado, 'C', valor_com_taxa, cc->vetor[opcao - 1]->taxa_compra, cc->vetor[opcao - 1]->nome, quantidade);
+        salvar_extrato_arquivo(Lista, indice_logado); //salva o extrato em arquivo
         printf("Compra confirmada.\n");
         printf("Você comprou %.5f %s por %.2f BRL.\n", quantidade, cc->vetor[opcao - 1]->nome, valor_com_taxa);
         printf("Taxa de compra: %.2f%%\n", cc->vetor[opcao - 1]->taxa_compra * 100);
@@ -124,12 +126,14 @@ void vender_crypto(lista *Lista, int indice_logado, Coins *cc) {
         return;
     }else{
         Lista->vetor[indice_logado]->saldo += valor_venda_com_taxa;
-        Lista->vetor[indice_logado]->btc -= quantidade;
-        Lista->vetor[indice_logado]->transacoes[Lista->vetor[indice_logado]->qtdTransacoes].valor = valor_venda;
-        Lista->vetor[indice_logado]->transacoes[Lista->vetor[indice_logado]->qtdTransacoes].taxa = cc->vetor[opcao - 1]->taxa_venda;
-        strcpy(Lista->vetor[indice_logado]->transacoes[Lista->vetor[indice_logado]->qtdTransacoes].crypto, cc->vetor[opcao - 1]->nome);
-        Lista->vetor[indice_logado]->transacoes[Lista->vetor[indice_logado]->qtdTransacoes].quantidade = quantidade;
-        Lista->vetor[indice_logado]->qtdTransacoes++;
+        Lista->vetor[indice_logado]->crypto[opcao-1] -= quantidade;
+        if (Lista->vetor[indice_logado]->crypto[opcao-1] < 0) {
+            printf("Você não possui essa quantidade de %s.\n", cc->vetor[opcao - 1]->nome);
+            Lista->vetor[indice_logado]->crypto[opcao-1] += quantidade; //reverte a venda
+            return;
+        }
+        registra_transacao(Lista, indice_logado, 'V', valor_venda_com_taxa, cc->vetor[opcao - 1]->taxa_venda, cc->vetor[opcao - 1]->nome, quantidade);
+        salvar_extrato_arquivo(Lista, indice_logado); //salva o extrato em arquivo
         printf("\nVenda confirmada.\n");
         printf("Você vendeu %.5f %s por %.2f BRL.\n", quantidade, cc->vetor[opcao - 1]->nome, valor_venda_com_taxa);
         printf("Taxa de venda: %.2f%%\n", cc->vetor[opcao - 1]->taxa_venda * 100);
