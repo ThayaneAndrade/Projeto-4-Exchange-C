@@ -104,7 +104,7 @@ void carregar_usuarios(lista *Lista) {
     fclose(arquivo);
 }
 
-void arquivar_usuarios(lista *Lista, int indice_logado) {
+void arquivar_usuarios(lista *Lista) {
     FILE *arquivo = fopen("usuarios.bin", "wb");
     for (int i = 0; i < Lista->qtd; i++) {
         fwrite(Lista->vetor[i], sizeof(usuario), 1, arquivo);

@@ -47,9 +47,9 @@
                 atualizar_cotacao(bitcoin, ethereum, ripple);
                 break;
             case 9:
-                arquivar_usuarios(Lista, *indice_logado);
+                arquivar_usuarios(Lista);
                 arquivar_cryptos(bitcoin, ethereum, ripple);
-                printf("\n*Saindo...\n");
+                printf("\nSaindo...\n");
                 *indice_logado = -1;
                 break;
             default:
