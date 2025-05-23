@@ -38,10 +38,15 @@ typedef struct cryptomoeda {
     float taxa_compra;
     float taxa_venda;
 }cryptomoeda;
+
+typedef struct {
+    cryptomoeda *vetor[10];  //ponteiro para array de cryptomoedas
+    int qtd;             //quantas cryptos estao ativas
+} Coins;
  
 void registrar(lista *Lista);
 int login(lista *Lista);
-void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
+void menuprincipal(lista *Lista, int *indice_logado, Coins *cc);
 int solicita_senha(lista Lista, int indice_logado);
 int inserir_usuario(lista *Lista, usuario *user);
 void debug_imprimir_lista(lista *l);
@@ -50,12 +55,13 @@ void saldo(lista *Lista, int indice_logado);
 void deposito(lista *Lista, int indice_logado);
 void saque(lista *Lista, int indice_logado);
 void arquivar_usuarios(lista *Lista);
-void mostrar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
-void atualizar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
-void arquivar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
-void carregar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
-void compra_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado);
-void vender_crypto(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple, lista *Lista, int indice_logado);
+void mostrar_cotacao(Coins *cc);
+void atualizar_cotacao(Coins *cc);
+void arquivar_cryptos(Coins *cc);
+void carregar_cryptos(Coins *cc);
+void compra_crypto(lista *Lista, int indice_logado, Coins *cc);
+void vender_crypto(lista *Lista, int indice_logado, Coins *cc);
+void mostrar_cotacao(Coins *cc);
 int userinput(int max);
 double uservalor();
 void registra_transacao(lista *Lista, int indice_logado, char tipo, double valor, double taxa, const char *crypto, double quantidade);
@@ -63,7 +69,10 @@ void extrato(lista *Lista, int indice_logado);
 void salvar_extrato_arquivo(lista *Lista, int indice_logado);
 void verificaadmin(lista *Lista);
 int loginadmin(lista *Lista, usuario *adm);
-void menuadmin(lista *Lista);
+void menuadmin(lista *Lista, Coins *cc);
 void excluiruser(lista *Lista);
+void criarcrypto(Coins *cc);
+void mostrar_cryptos(Coins *cc);
+void excluircrypto(Coins *cc);
 
 #endif  // Fim do arquivo de cabeçalho

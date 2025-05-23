@@ -5,9 +5,9 @@
 #include "funcoes.h"
 
 
- void menuprincipal(lista *Lista, int *indice_logado, cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple){
+ void menuprincipal(lista *Lista, int *indice_logado, Coins *cc) {
     printf("\n-----Bem vindo(a) à CryptoSpy 2.0------\n");
-    carregar_cryptos(bitcoin, ethereum, ripple);
+    printf("Quantidade de criptomoedas atuais: %d\n", cc->qtd);
  
     while (*indice_logado != -1) {
         printf("\nO que deseja fazer a seguir, %s?\n", Lista->vetor[*indice_logado]->nome);
@@ -35,20 +35,18 @@
                 extrato(Lista, *indice_logado);
                 break;
             case 5:
-                compra_crypto(bitcoin, ethereum, ripple, Lista, *indice_logado);
+                compra_crypto(Lista, *indice_logado, cc);
                 break;
             case 6:
-                vender_crypto(bitcoin, ethereum, ripple, Lista, *indice_logado);
+                vender_crypto(Lista, *indice_logado, cc);
                 break;
             case 7:
-                mostrar_cotacao(bitcoin, ethereum, ripple);
+                mostrar_cotacao(cc);
                 break;
             case 8:
-                atualizar_cotacao(bitcoin, ethereum, ripple);
+                atualizar_cotacao(cc);
                 break;
             case 9:
-                arquivar_usuarios(Lista);
-                arquivar_cryptos(bitcoin, ethereum, ripple);
                 printf("\nSaindo...\n");
                 *indice_logado = -1;
                 break;
