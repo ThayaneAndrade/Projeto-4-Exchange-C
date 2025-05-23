@@ -1,52 +1,48 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include "funcoes.h"
 #include <time.h>
+#include "funcoes.h"
 
-int main() {
-    int indice_logado = -1; //índica dinamicamente qual usuário está conectado, baseado no seu índice no vetor de usuarios (EX: 1 = Kaique, 2 = Thayane, 3 = ...)
-    lista *Lista = malloc(sizeof(lista)); //declara a lista de usuarios
+int main(void) {
+    int indice_logado = -1;                  //indica indice do usuario logado
+    lista *Lista = malloc(sizeof(lista));    //declara lista de usuarios
+    Lista->qtd = 0;
     verificaadmin(Lista);
 
-    //declaração das criptomoedas;
-    cryptomoeda *bitcoin = malloc(sizeof(cryptomoeda));
-    strcpy(bitcoin->nome, "BTC");
-    bitcoin->valor = 467458.20;
-    bitcoin->taxa_compra = 0.03;
-    bitcoin->taxa_venda = 0.02;
+    Coins cc;
+    cc.qtd = 0;                              //inicia sem criptomoedas
+    for (int i = 0; i < 10; i++)
+        cc.vetor[i] = NULL;
+    carregar_cryptos(&cc);                   //carrega cryptos de arquivo
 
-    cryptomoeda *ethereum = malloc(sizeof(cryptomoeda));
-    strcpy(ethereum->nome, "ETH");
-    ethereum->valor = 9264.65;
-    ethereum->taxa_compra = 0.01;
-    ethereum->taxa_venda = 0.02;
+    printf("\n\n----- Bem vindo a CryptoSpy 2.0 -----\n");
+    while (indice_logado == -1) {            //enquanto nao logado
+        printf("1. Login\n");
+        printf("2. Sair\n");
+        printf("3. Debug\n");
+        int opcao = userinput(3);
 
-    cryptomoeda *ripple = malloc(sizeof(cryptomoeda));
-    strcpy(ripple->nome, "XRP");
-    ripple->valor = 11.77;
-    ripple->taxa_compra = 0.01;
-    ripple->taxa_venda = 0.01;
- 
-    printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n"); //título
-    while (indice_logado == -1) { //enquanto o usuário não estiver logado, entrará na tela de login.
-            printf("1. Login\n");
-            printf("2. Sair\n");
-            printf("3. Debug\n");
-            int opcao = userinput(3);
-            
-            if(opcao == 1){
-                if ((indice_logado = login(Lista)) != -1) { //tenta fazer login, se bem sucedido, armazena o índice do usuário conectado, se não, índice -1 (ninguém)
-                menuprincipal(Lista, &indice_logado, bitcoin, ethereum, ripple); //se o login for bem sucedido, chama o menu principal
-                }
-            }else if(opcao == 2){
-                printf("\nDesligando...\n");
-                break;
-            }else if(opcao == 3){
-                debug_imprimir_lista(Lista);
-            }else{
-                printf("Opção inválida. Tente novamente.\n");
+        if (opcao == 1) {
+            if ((indice_logado = login(Lista)) != -1) {
+                menuprincipal(Lista, &indice_logado, &cc);
             }
-            }return 0;
+        } else if (opcao == 2) {
+            printf("\nDesligando...\n");
+            break;
+        } else if (opcao == 3) {
+            debug_imprimir_lista(Lista);
+        } else {
+            printf("Opcao invalida. Tente novamente.\n");
+        }
+    }
+
+    //libera memoria de cryptos
+    for (int i = 0; i < cc.qtd; i++)
+        free(cc.vetor[i]);
+    //libera memoria de usuarios
+    for (int i = 0; i < Lista->qtd; i++)
+        free(Lista->vetor[i]);
+    free(Lista);
+
+    return 0;
 }
- 

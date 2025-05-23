@@ -5,14 +5,18 @@
 #include <time.h>
 
 
-void main() {  
-    lista *Lista = malloc(sizeof(lista)); //declara a lista de usuarios
+int main(void) {
+    Coins cc;
+    cc.qtd = 0;
+    carregar_cryptos(&cc);
+    lista *Lista = malloc(sizeof(lista));
+    Lista->qtd = 0;
     verificaadmin(Lista);
-    if (loginadmin(Lista, Lista->vetor[0]) == 1) {
-        menuadmin(Lista);
+    if(loginadmin(Lista, Lista->vetor[0])==1){
+        menuadmin(Lista, &cc);
     } else {
         printf("\nAcesso Negado.\n");
-        return;
     }
-
+    for(int i=0;i<cc.qtd;i++) free(cc.vetor[i]);
+    return 0;
 }
