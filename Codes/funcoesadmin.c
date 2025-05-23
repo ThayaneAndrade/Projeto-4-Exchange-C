@@ -103,7 +103,7 @@ void excluiruser(lista *Lista){
     scanf("%s", cpf);
     for(int i = 0; i < Lista->qtd; i++){
         //verifica se o cpf pertence ao admin, e encerra a remoção
-        if(strcmp(Lista->vetor[i]->cpf, "12345678910") == 0){
+        if(strcmp(cpf, "12345678910") == 0){
             printf("Não é possivel remover o administrador.\n");
             printf("Pressione ENTER para continuar\n");
             getchar();
