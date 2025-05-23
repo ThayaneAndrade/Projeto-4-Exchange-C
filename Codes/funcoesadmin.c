@@ -47,19 +47,22 @@ void verificaadmin(lista *Lista){
 void menuadmin(lista *Lista, Coins *cc){
     while(1){
         //menu do admin, ainda não implementado
-        printf("----- Menu Admin -----\n");
-        printf("1. Listar usuários\n");
-        printf("2. Registrar usuário\n");
-        printf("3. Excluir usuário\n");
-        printf("4. Criar criptomoeda\n");
-        printf("5. Excluir criptomoeda\n");
-        printf("6. Mostrar criptomoedas\n");
-        printf("7. Sair\n");
-        printf("\nQUANTIDADE DE CRIPTOMOEDAS ATUAIS: %d\n", cc->qtd);
-        int opcao = userinput(7);
+        printf("\n\n----- Menu Admin -----\n");
+        printf("1. Extrato de usuário\n");
+        printf("2. Registrar usuario\n");
+        printf("3. Excluir usuario\n");
+        printf("4. Consultar usuario\n");
+        printf("5. Criar criptomoeda\n");
+        printf("6. Excluir criptomoeda\n");
+        printf("7. Mostrar criptomoedas\n");
+        printf("8. Atualizar cotacao\n");
+        printf("9. Lista de usuários\n");
+        printf("10. Sair\n");
+        printf("-----\n");
+        int opcao = userinput(10);
         switch (opcao) {
             case 1:
-                debug_imprimir_lista(Lista);
+                consultarextrato(Lista, 0);
                 break;
             case 2:
                 registrar(Lista);
@@ -68,17 +71,26 @@ void menuadmin(lista *Lista, Coins *cc){
                 excluiruser(Lista);
                 break;
             case 4:
-                criarcrypto(cc);
+                consultarusuario(Lista);
                 break;
             case 5:
-                excluircrypto(cc);
+                criarcrypto(cc);
                 break;
             case 6:
-                mostrar_cryptos(cc);
+                excluircrypto(cc);
                 break;
             case 7:
+                mostrar_cryptos(cc);
+                break;
+            case 8:
+                atualizar_cotacao(cc);
+                break;
+            case 10:
                 printf("Saindo do menu admin...\n");
                 return;
+            case 9:
+                debug_imprimir_lista(Lista);
+                break;    
             default:
                 printf("Opção inválida.\n");
                 break;
@@ -217,4 +229,53 @@ void excluircrypto(Coins *cc){
         }
     }
     printf("Criptomoeda %s nao encontrada!\n", nome);
+}
+
+void consultarusuario(lista *Lista){
+    char cpf[12];
+    printf("Digite o CPF do usuario a ser consultado: ");
+    scanf("%s", cpf);
+    for(int i = 0; i < Lista->qtd; i++){
+        if(strcmp(Lista->vetor[i]->cpf, cpf) == 0){
+            printf("\nUsuario encontrado: %s\n", Lista->vetor[i]->nome);
+            printf("  Nome:  %s\n", Lista->vetor[i]->nome);
+            printf("  CPF:  %s\n", Lista->vetor[i]->cpf);
+            printf("  Senha: %d\n", Lista->vetor[i]->senha);
+            printf("  Saldo: %.2f\n", Lista->vetor[i]->saldo);
+            printf("\n");
+            return;
+        }
+    }
+    printf("Usuario %s nao encontrado!\n", cpf);
+}
+
+void consultarextrato(lista *Lista, int indice_logado){
+    printf("\nDigite o CPF do usuario a ser consultado: ");
+    char cpf[12];
+    scanf("%s", cpf);
+    for(int i = 0; i < Lista->qtd; i++){
+        if(strcmp(Lista->vetor[i]->cpf, cpf) == 0){
+            indice_logado = i;
+        }
+    }  
+        usuario *u = Lista->vetor[indice_logado]; 
+    char caminhoArquivo[128]; //declara o caminho do arquivo
+    sprintf(caminhoArquivo, "extratos/extrato_%s.txt", u->cpf); //cria o caminho do arquivo de extrato do usuário logado
+    FILE *fp = fopen(caminhoArquivo, "r");
+    if (!fp) {
+        printf("Arquivo de extrato nao encontrado.\n");
+        printf("Pressione ENTER para continuar...");
+        getchar();
+        getchar();
+        return;
+    }
+    char linha[256];
+    while (fgets(linha, sizeof(linha), fp)) {
+        printf("%s", linha);
+    }
+    fclose(fp);
+    printf("\nPressione ENTER para continuar...");
+    getchar();
+    getchar();
+    return;
 }
