@@ -7,7 +7,7 @@
 int main() {
     int indice_logado = -1; //índica dinamicamente qual usuário está conectado, baseado no seu índice no vetor de usuarios (EX: 1 = Kaique, 2 = Thayane, 3 = ...)
     lista *Lista = malloc(sizeof(lista)); //declara a lista de usuarios
-    carregar_usuarios(Lista); //carrega os usuarios do arquivo para o vetor de ponteiros
+    verificaadmin(Lista);
 
     //declaração das criptomoedas;
     cryptomoeda *bitcoin = malloc(sizeof(cryptomoeda));
@@ -30,21 +30,19 @@ int main() {
  
     printf("\n\n-----Bem vindo(a) a CryptoSpy 2.0-----\n"); //título
     while (indice_logado == -1) { //enquanto o usuário não estiver logado, entrará na tela de login.
-            printf("\n1. Registrar\n");
-            printf("2. Login\n");
-            printf("3. Sair\n");
-            printf("4. Debug\n");
-            int opcao = userinput(4);
+            printf("1. Login\n");
+            printf("2. Sair\n");
+            printf("3. Debug\n");
+            int opcao = userinput(3);
+            
             if(opcao == 1){
-                registrar(Lista);
-            }else if(opcao == 2){
                 if ((indice_logado = login(Lista)) != -1) { //tenta fazer login, se bem sucedido, armazena o índice do usuário conectado, se não, índice -1 (ninguém)
                 menuprincipal(Lista, &indice_logado, bitcoin, ethereum, ripple); //se o login for bem sucedido, chama o menu principal
                 }
-            }else if(opcao == 3){
+            }else if(opcao == 2){
                 printf("\nDesligando...\n");
                 break;
-            }else if(opcao == 4){
+            }else if(opcao == 3){
                 debug_imprimir_lista(Lista);
             }else{
                 printf("Opção inválida. Tente novamente.\n");

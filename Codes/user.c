@@ -7,13 +7,13 @@
 
 
 void registrar(lista *Lista) { //função para registrar usuários, pede somente nome cpf e senha, os valores iniciais de moedas são 0.
-    FILE *arquivo = fopen("usuarios.bin", "wb");
+    FILE *arquivo = fopen("usuarios.bin", "ab");
     printf("----- Cadastro -----\n");
     usuario *user = malloc(sizeof(usuario));
     user->qtdTransacoes = 0;
     printf("Digite seu nome: ");
     scanf("%s", user->nome);
-    printf("Digite seu CPF (somente números): ");
+    printf("Digite seu CPF (somente números):");
     scanf("%s", user->cpf);
     if (strlen(user->cpf) != 11) {
         printf("CPF inválido. Deve conter 11 dígitos.\n");
@@ -30,7 +30,7 @@ void registrar(lista *Lista) { //função para registrar usuários, pede somente
             return;
         }
     }
-    printf("Digite sua senha (somente números): ");
+    printf("Digite sua senha (somente números)");
     user->senha = userinput(99999);
     printf("Cadastro realizado com sucesso!\n");
     Lista->vetor[Lista->qtd] = user;
