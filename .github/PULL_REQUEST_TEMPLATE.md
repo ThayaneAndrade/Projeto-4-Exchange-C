@@ -2,7 +2,6 @@
 
 Descreva de forma objetiva o que você implementou/modificou neste PR.  
 
-
 ## 📁 Arquivos alterados
 
 Liste os arquivos afetados neste PR:
@@ -10,9 +9,11 @@ Liste os arquivos afetados neste PR:
 - [ ] `main.c`
 - [ ] `funcoes.c`
 - [ ] `funcoes.h`
-
-Marque com [x] os arquivos que realmente foram alterados.
-
+- [ ] `admin.c`
+- [ ] `user.c`
+- [ ] `crypto.c`
+- [ ] `menu.c`
+- [ ] `transacoes.c`
 
 ## ✅ Testado?
 
