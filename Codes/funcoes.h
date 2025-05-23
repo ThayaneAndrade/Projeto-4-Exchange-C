@@ -49,7 +49,7 @@ void carregar_usuarios(lista *Lista);
 void saldo(lista *Lista, int indice_logado);
 void deposito(lista *Lista, int indice_logado);
 void saque(lista *Lista, int indice_logado);
-void arquivar_usuarios(lista *Lista, int indice_logado);
+void arquivar_usuarios(lista *Lista);
 void mostrar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
 void atualizar_cotacao(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
 void arquivar_cryptos(cryptomoeda *bitcoin, cryptomoeda *ethereum, cryptomoeda *ripple);
@@ -64,5 +64,6 @@ void salvar_extrato_arquivo(lista *Lista, int indice_logado);
 void verificaadmin(lista *Lista);
 int loginadmin(lista *Lista, usuario *adm);
 void menuadmin(lista *Lista);
+void excluiruser(lista *Lista);
 
 #endif  // Fim do arquivo de cabeçalho

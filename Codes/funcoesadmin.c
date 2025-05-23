@@ -61,7 +61,8 @@ void menuadmin(lista *Lista){
                 registrar(Lista);
                 break;
             case 3:
-                return;
+                excluiruser(Lista);
+                break;
             case 4:
                 printf("Saindo do menu admin...\n");
                 return;
@@ -96,3 +97,38 @@ int loginadmin(lista *Lista, usuario *adm){  //atua similar a função de login,
     return 1;
 }
     
+void excluiruser(lista *Lista){
+    char cpf[12];
+    printf("Digite o CPF do usuario a ser excluido: ");
+    scanf("%s", cpf);
+    for(int i = 0; i < Lista->qtd; i++){
+        if(strcmp(Lista->vetor[i]->cpf, cpf) == 0){
+            printf("\nUsuário encontrado: %s\n", Lista->vetor[i]->nome);
+            printf("  Nome:  %s\n", Lista->vetor[i]->nome);
+            printf("  CPF:  %s\n", Lista->vetor[i]->cpf);
+            printf("  Senha: %d\n", Lista->vetor[i]->senha);
+            printf("  Saldo: %.2f\n", Lista->vetor[i]->saldo);
+            printf("\n");
+            printf("Deseja continuar com a exclusão?\n");
+            printf("1. Sim\n");
+            printf("2. Não\n");
+            int confirmacao = userinput(2);
+            if (confirmacao != 1) {
+                printf("Exclusão cancelada.\n");
+                printf("Pressione ENTER para continuar\n");
+                getchar();
+                getchar();
+                return;
+            }
+            free(Lista->vetor[i]);
+            for(int j = i; j < Lista->qtd - 1; j++){
+                Lista->vetor[j] = Lista->vetor[j + 1];
+            }
+            Lista->qtd--;
+            printf("Usuario %s excluido com sucesso!\n", cpf);
+            arquivar_usuarios(Lista);
+            return;
+        }
+    }
+    printf("Usuario %s nao encontrado!\n", cpf);
+}
